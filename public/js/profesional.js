@@ -83,6 +83,36 @@ const tipoLabels = {
   nota:        'Nota'
 };
 
+function renderArchivo(item) {
+  if (!item.archivo_path) return '';
+  const fileUrl = `${API_BASE_URL}/archivo/${item.archivo_path}?token=${encodeURIComponent(token)}`;
+  const isImage = item.archivo_tipo && item.archivo_tipo.startsWith('image/');
+  const isVideo = item.archivo_tipo && item.archivo_tipo.startsWith('video/');
+
+  if (isImage) {
+    return `<div class="historial-archivo">
+      <a href="${fileUrl}" target="_blank" rel="noopener">
+        <img src="${fileUrl}" alt="${item.archivo_nombre}" class="historial-archivo-img" loading="lazy" />
+      </a>
+      <div class="historial-archivo-nombre">${item.archivo_nombre}</div>
+    </div>`;
+  }
+  if (isVideo) {
+    return `<div class="historial-archivo">
+      <video controls class="historial-archivo-video" preload="metadata">
+        <source src="${fileUrl}" type="${item.archivo_tipo}" />
+        Tu navegador no soporta la reproducción de video.
+      </video>
+      <div class="historial-archivo-nombre">${item.archivo_nombre}</div>
+    </div>`;
+  }
+  return `<div class="historial-archivo">
+    <a href="${fileUrl}" target="_blank" rel="noopener" class="historial-archivo-link" download="${item.archivo_nombre}">
+      📎 ${item.archivo_nombre}
+    </a>
+  </div>`;
+}
+
 function renderHistorial(historial) {
   const container = document.getElementById('historial-container');
   const badge     = document.getElementById('badge-count');
@@ -100,9 +130,11 @@ function renderHistorial(historial) {
         <div class="historial-item-body">
           <div class="historial-item-titulo">${item.titulo}</div>
           ${item.descripcion ? `<div class="historial-item-desc">${item.descripcion}</div>` : ''}
+          ${renderArchivo(item)}
           <div class="historial-item-meta">
             ${item.fecha_registro ? `Fecha: ${item.fecha_registro} · ` : ''}
             Registrado el ${new Date(item.created_at).toLocaleDateString('es-AR')}
+            · Por ${item.prof_nombre} ${item.prof_apellido}
           </div>
         </div>
       </div>
@@ -111,22 +143,43 @@ function renderHistorial(historial) {
 }
 
 // ── Modal nuevo registro ──────────────────────────────────────────────────────
+function cerrarModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  document.getElementById('form-registro').reset();
+  document.getElementById('archivo-preview').classList.add('hidden');
+  document.getElementById('archivo-preview').innerHTML = '';
+}
+
 document.getElementById('btn-nuevo-registro').addEventListener('click', () => {
   if (!pacienteActual) return;
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.getElementById('fecha-registro').value = new Date().toISOString().split('T')[0];
 });
 
-document.getElementById('btn-cancelar').addEventListener('click', () => {
-  document.getElementById('modal-overlay').classList.add('hidden');
-  document.getElementById('form-registro').reset();
-});
+document.getElementById('btn-cancelar').addEventListener('click', cerrarModal);
 
 document.getElementById('modal-overlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('modal-overlay')) {
-    document.getElementById('modal-overlay').classList.add('hidden');
-    document.getElementById('form-registro').reset();
+  if (e.target === document.getElementById('modal-overlay')) cerrarModal();
+});
+
+// Previsualización del archivo seleccionado
+document.getElementById('archivo').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const preview = document.getElementById('archivo-preview');
+  if (!file) {
+    preview.classList.add('hidden');
+    preview.innerHTML = '';
+    return;
   }
+  const url = URL.createObjectURL(file);
+  if (file.type.startsWith('image/')) {
+    preview.innerHTML = `<img src="${url}" alt="preview" class="archivo-preview-img" />`;
+  } else if (file.type.startsWith('video/')) {
+    preview.innerHTML = `<video src="${url}" class="archivo-preview-video" controls muted preload="metadata"></video>`;
+  } else {
+    preview.innerHTML = `<span class="archivo-preview-nombre">📎 ${file.name}</span>`;
+  }
+  preview.classList.remove('hidden');
 });
 
 // ── Guardar registro ──────────────────────────────────────────────────────────
@@ -141,15 +194,22 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
   const titulo        = document.getElementById('titulo').value.trim();
   const descripcion   = document.getElementById('descripcion').value.trim();
   const fechaRegistro = document.getElementById('fecha-registro').value;
+  const archivoInput  = document.getElementById('archivo');
+
+  const formData = new FormData();
+  formData.append('tipo', tipo);
+  formData.append('titulo', titulo);
+  formData.append('descripcion', descripcion);
+  formData.append('fecha_registro', fechaRegistro);
+  if (archivoInput.files[0]) {
+    formData.append('archivo', archivoInput.files[0]);
+  }
 
   try {
     const res = await fetch(`${API_BASE_URL}/historial/paciente/${pacienteActual.id}/registro`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ tipo, titulo, descripcion, fecha_registro: fechaRegistro })
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
     });
 
     if (!res.ok) {
@@ -159,10 +219,8 @@ document.getElementById('form-registro').addEventListener('submit', async (e) =>
     }
 
     const data = await res.json();
-    document.getElementById('modal-overlay').classList.add('hidden');
-    document.getElementById('form-registro').reset();
+    cerrarModal();
     toast('Registro guardado correctamente');
-
     renderHistorial(data.historial);
 
   } catch (err) {

@@ -202,3 +202,88 @@
   &:hover     { background: #15803d; }
   &:disabled  { opacity: 0.6; cursor: not-allowed; }
 }
+
+// ── Campo de archivo en el modal ──────────────────────────────────────────────
+.campo-archivo {
+  input[type="file"] {
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--gris);
+  }
+}
+
+.archivo-hint {
+  font-size: 0.75rem;
+  color: var(--gris-claro);
+  margin-top: 4px;
+}
+
+.archivo-preview {
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+
+  &.hidden { display: none; }
+}
+
+.archivo-preview-img,
+.archivo-preview-video {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  background: #000;
+}
+
+.archivo-preview-nombre {
+  display: block;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+
+// ── Archivos en el historial ──────────────────────────────────────────────────
+.historial-archivo {
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+}
+
+.historial-archivo-img {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: contain;
+  background: #000;
+  cursor: zoom-in;
+}
+
+.historial-archivo-video {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  background: #000;
+}
+
+.historial-archivo-nombre {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  color: var(--gris-claro);
+  border-top: 1px solid var(--borde);
+}
+
+.historial-archivo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  color: var(--azul);
+  text-decoration: none;
+
+  &:hover { text-decoration: underline; }
+}

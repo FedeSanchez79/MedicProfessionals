@@ -56,12 +56,20 @@ export async function initDb() {
       fecha_registro  DATE,
       activo          INTEGER DEFAULT 1,
       acepta_paciente INTEGER DEFAULT 0,
+      archivo_path    TEXT,
+      archivo_nombre  TEXT,
+      archivo_tipo    TEXT,
       created_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (patient_id)      REFERENCES users(id),
       FOREIGN KEY (professional_id) REFERENCES users(id)
     );
   `);
+
+  // Migración para bases de datos existentes
+  for (const col of ['archivo_path TEXT', 'archivo_nombre TEXT', 'archivo_tipo TEXT']) {
+    try { await db.exec(`ALTER TABLE medical_records ADD COLUMN ${col}`); } catch (_) {}
+  }
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS qr_tokens (

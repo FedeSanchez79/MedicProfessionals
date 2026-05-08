@@ -108,6 +108,15 @@
         <input type="date" id="fecha-registro" />
       </div>
 
+      <div class="campo">
+        <label for="archivo">Archivo adjunto (opcional)</label>
+        <div class="campo-archivo" id="campo-archivo-wrapper">
+          <input type="file" id="archivo" accept="image/*,video/*" />
+          <div class="archivo-hint">Imágenes o videos · máx. 200 MB</div>
+          <div class="archivo-preview hidden" id="archivo-preview"></div>
+        </div>
+      </div>
+
       <div class="modal-footer">
         <button type="button" class="btn-cancelar" id="btn-cancelar">Cancelar</button>
         <button type="submit" class="btn-guardar" id="btn-guardar">Guardar registro</button>

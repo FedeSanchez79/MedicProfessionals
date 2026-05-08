@@ -3,8 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import path from 'path';
 import { openDb, initDb } from './database.js';
 import pacienteRouter from './routes/paciente.js';
+import { UPLOADS_DIR } from './upload.js';
 
 dotenv.config();
 
@@ -115,6 +117,20 @@ app.post('/login', async (req, res) => {
 // ─── Rutas protegidas ─────────────────────────────────────────────────────────
 
 app.use('/historial/paciente', authenticateToken, pacienteRouter);
+
+app.get('/archivo/:filename', (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = (authHeader && authHeader.split(' ')[1]) || req.query.token;
+  if (!token) return res.status(401).json({ message: 'Token requerido' });
+
+  jwt.verify(token, JWT_SECRET, (err) => {
+    if (err) return res.status(403).json({ message: 'Token inválido' });
+    const filename = path.basename(req.params.filename);
+    res.sendFile(path.join(UPLOADS_DIR, filename), (sendErr) => {
+      if (sendErr) res.status(404).json({ message: 'Archivo no encontrado' });
+    });
+  });
+});
 
 app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
   if (req.user.role !== 'professional') {
