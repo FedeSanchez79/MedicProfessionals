@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Profesional — Medic Professionals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="page-profesional">
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="/" class="navbar-brand">
+      <div class="navbar-brand-dot"></div>
+      Medic Professionals
+    </a>
+    <span class="rol-badge">Profesional</span>
+  </div>
+  <div class="navbar-right">
+    <span class="navbar-nombre">Dr/a. <span id="nombre-display">—</span></span>
+    <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
+  </div>
+</nav>
+
+<!-- Contenido principal -->
+<main class="main">
+
+  <div class="page-header">
+    <h1>Panel profesional</h1>
+    <p>Accedé al historial de un paciente escaneando su código QR.</p>
+  </div>
+
+  <!-- Estado sin paciente -->
+  <div id="estado-vacio">
+    <div class="estado-vacio">
+      <div class="estado-vacio-icono">📱</div>
+      <h2>Ningún paciente cargado</h2>
+      <p>Pedile al paciente que genere su código QR desde Medic Data y escanealo para acceder a su historial.</p>
+      <p class="estado-vacio-hint">
+        El QR del paciente contiene un enlace seguro que expira en 15 minutos.
+      </p>
+    </div>
+  </div>
+
+  <!-- Vista del paciente (se muestra después de escanear QR) -->
+  <div id="vista-paciente" class="hidden">
+
+    <div class="paciente-header">
+      <div class="paciente-info">
+        <div class="paciente-avatar" id="paciente-avatar">—</div>
+        <div>
+          <div class="paciente-nombre" id="paciente-nombre">—</div>
+          <div class="paciente-meta" id="paciente-meta">—</div>
+        </div>
+      </div>
+      <button class="btn-nuevo-registro" id="btn-nuevo-registro">
+        + Agregar registro
+      </button>
+    </div>
+
+    <div class="historial-header">
+      <h2>Historial médico</h2>
+      <span class="badge-count" id="badge-count">0 registros</span>
+    </div>
+    <div id="historial-container">
+      <div class="historial-vacio">No hay registros médicos todavía.</div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Modal nuevo registro -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-titulo">Nuevo registro médico</div>
+    <form id="form-registro">
+
+      <div class="campo">
+        <label for="tipo">Tipo de registro</label>
+        <select id="tipo" required>
+          <option value="">Seleccioná el tipo</option>
+          <option value="diagnostico">Diagnóstico</option>
+          <option value="medicacion">Medicación</option>
+          <option value="alergia">Alergia</option>
+          <option value="cirugia">Cirugía</option>
+          <option value="vacuna">Vacuna</option>
+          <option value="estudio">Estudio</option>
+          <option value="nota">Nota</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" placeholder="Ej: Hipertensión arterial" required />
+      </div>
+
+      <div class="campo">
+        <label for="descripcion">Descripción (opcional)</label>
+        <textarea id="descripcion" placeholder="Detalles, indicaciones, observaciones..."></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="fecha-registro">Fecha del registro</label>
+        <input type="date" id="fecha-registro" />
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" id="btn-cancelar">Cancelar</button>
+        <button type="submit" class="btn-guardar" id="btn-guardar">Guardar registro</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="mensaje-global"></div>
+
+<script src="../js/profesional.js"></script>
+</body>
+</html>

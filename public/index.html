@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medic Professionals — Acceso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-layout">
+
+<div class="wrapper">
+
+  <!-- Panel izquierdo -->
+  <div class="panel-izq">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+        </svg>
+      </div>
+      <span class="logo-texto">Medic Professionals</span>
+    </div>
+
+    <div class="panel-izq-copy">
+      <h2>Gestioná el historial de tus pacientes</h2>
+      <p>Accedé, cargá y administrá información médica de forma segura y eficiente.</p>
+    </div>
+
+    <div class="features">
+      <div class="feature-item"><div class="feature-dot"></div>Escaneá el QR del paciente para acceder</div>
+      <div class="feature-item"><div class="feature-dot"></div>Cargá diagnósticos, tratamientos y notas</div>
+      <div class="feature-item"><div class="feature-dot"></div>Historial siempre actualizado</div>
+      <div class="feature-item"><div class="feature-dot"></div>Cumple con la Ley 25.326 (DNPDP)</div>
+    </div>
+  </div>
+
+  <!-- Panel derecho -->
+  <div class="panel-der" id="panelDer">
+
+    <!-- Formulario Login -->
+    <div id="loginSection">
+      <h1 class="form-title">Iniciar sesión</h1>
+      <p class="form-sub">Ingresá con tu usuario y contraseña</p>
+      <form id="loginForm">
+        <div class="campo">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" placeholder="tu_usuario" required autocomplete="username" />
+        </div>
+        <div class="campo">
+          <label for="password">Contraseña</label>
+          <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-principal">Ingresar</button>
+        <div class="cambiar-form">
+          ¿No tenés cuenta? <button type="button" id="showRegisterBtn">Registrarse</button>
+        </div>
+      </form>
+      <div id="message"></div>
+    </div>
+
+    <!-- Formulario Registro -->
+    <div id="registerSection" class="hidden">
+      <h1 class="form-title">Crear cuenta</h1>
+      <p class="form-sub">Registrate como profesional de salud</p>
+      <form id="registerForm">
+        <div class="fila-2">
+          <div class="campo">
+            <label for="firstNameReg">Nombre</label>
+            <input type="text" id="firstNameReg" placeholder="Juan" required />
+          </div>
+          <div class="campo">
+            <label for="lastNameReg">Apellido</label>
+            <input type="text" id="lastNameReg" placeholder="Pérez" required />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="emailReg">Email</label>
+          <input type="email" id="emailReg" placeholder="juan@email.com" required autocomplete="email" />
+        </div>
+        <div class="campo">
+          <label for="phoneReg">Teléfono</label>
+          <input type="tel" id="phoneReg" placeholder="+54 11 1234-5678" required />
+        </div>
+        <div class="campo">
+          <label for="usernameReg">Usuario</label>
+          <input type="text" id="usernameReg" placeholder="dr_perez" required autocomplete="username" />
+        </div>
+        <div class="fila-2">
+          <div class="campo">
+            <label for="passwordReg">Contraseña</label>
+            <input type="password" id="passwordReg" placeholder="••••••••" required autocomplete="new-password" />
+          </div>
+          <div class="campo">
+            <label for="confirmPasswordReg">Confirmar</label>
+            <input type="password" id="confirmPasswordReg" placeholder="••••••••" required autocomplete="new-password" />
+          </div>
+        </div>
+        <button type="submit" class="btn-principal">Crear cuenta</button>
+        <div class="cambiar-form">
+          ¿Ya tenés cuenta? <button type="button" id="showLoginBtn">Iniciar sesión</button>
+        </div>
+      </form>
+      <div id="messageReg"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

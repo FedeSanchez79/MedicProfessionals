@@ -1,0 +1,221 @@
+// Componentes compartidos
+
+// ── Navbar ────────────────────────────────────────────────────────────────────
+.navbar {
+  background: var(--blanco);
+  border-bottom: 1px solid var(--borde);
+  padding: 0 2rem;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.2rem;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.navbar-brand-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--azul);
+  border-radius: 50%;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar-nombre {
+  font-size: 0.85rem;
+  color: var(--gris);
+
+  span {
+    color: var(--texto);
+    font-weight: 500;
+  }
+}
+
+.btn-logout {
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--gris);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+
+  &:hover {
+    background: var(--error-bg);
+    color: var(--error);
+    border-color: #FCA5A5;
+  }
+}
+
+// ── Formularios ───────────────────────────────────────────────────────────────
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--texto);
+  letter-spacing: 0.01em;
+}
+
+input,
+select,
+textarea {
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid var(--borde);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--texto);
+  background: var(--blanco);
+  transition: border-color 0.2s;
+  outline: none;
+  width: 100%;
+
+  &:focus { border-color: var(--azul); }
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+// ── Historial ─────────────────────────────────────────────────────────────────
+.historial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+.badge-count {
+  font-size: 0.75rem;
+  background: var(--azul-suave);
+  color: var(--azul);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.historial-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.historial-item {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.historial-vacio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--gris-claro);
+  font-size: 0.88rem;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+
+  p:first-child {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+// ── Tipo badges ───────────────────────────────────────────────────────────────
+.tipo-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tipo-diagnostico { background: #EEF3FF; color: #1A5CFF; }
+.tipo-medicacion  { background: #F0FDF4; color: #16A34A; }
+.tipo-alergia     { background: #FEF2F2; color: #DC2626; }
+.tipo-cirugia     { background: #FFF7ED; color: #C2410C; }
+.tipo-vacuna      { background: #F5F3FF; color: #7C3AED; }
+.tipo-estudio     { background: #ECFEFF; color: #0E7490; }
+.tipo-nota        { background: #F9FAFB; color: #6B7280; }
+
+.historial-item-body { flex: 1; }
+
+.historial-item-titulo {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.historial-item-desc {
+  font-size: 0.82rem;
+  color: var(--gris);
+  line-height: 1.5;
+}
+
+.historial-item-meta {
+  font-size: 0.75rem;
+  color: var(--gris-claro);
+  margin-top: 6px;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+#mensaje-global {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+
+  &.exito   { background: var(--exito-bg);   color: var(--exito);   display: block; }
+  &.error   { background: var(--error-bg);   color: var(--error);   display: block; }
+  &.warning { background: var(--warning-bg); color: var(--warning); display: block; }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gris-claro);
+  font-size: 0.88rem;
+}

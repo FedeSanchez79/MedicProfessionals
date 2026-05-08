@@ -1,0 +1,237 @@
+// Estilos de la página de login/registro
+
+body.login-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+// ── Layout principal ──────────────────────────────────────────────────────────
+.wrapper {
+  display: flex;
+  width: 100%;
+  max-width: 900px;
+  min-height: 560px;
+  background: var(--blanco);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.08);
+}
+
+// ── Panel izquierdo decorativo ────────────────────────────────────────────────
+.panel-izq {
+  width: 42%;
+  background: var(--verde);
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    top: -80px;
+    right: -80px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    bottom: -60px;
+    left: -60px;
+  }
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+}
+
+.logo-texto {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.panel-izq-copy {
+  position: relative;
+  z-index: 1;
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.9rem;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+  }
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.feature-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+// ── Panel derecho — formularios ───────────────────────────────────────────────
+.panel-der {
+  flex: 1;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &.scroll { overflow-y: auto; }
+}
+
+.form-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.6rem;
+  color: var(--texto);
+  margin-bottom: 0.3rem;
+  letter-spacing: -0.02em;
+}
+
+.form-sub {
+  font-size: 0.85rem;
+  color: var(--gris);
+  margin-bottom: 1.8rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel-der .campo {
+  margin-bottom: 0;
+}
+
+.fila-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-principal {
+  margin-top: 4px;
+  padding: 0.75rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+
+  &:hover  { opacity: 0.9; }
+  &:active { transform: scale(0.99); }
+}
+
+.cambiar-form {
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--gris);
+  margin-top: 6px;
+
+  button {
+    background: none;
+    border: none;
+    color: var(--verde);
+    font-weight: 500;
+    font-size: 0.83rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+    width: auto;
+
+    &:hover { text-decoration: underline; }
+  }
+}
+
+#message,
+#messageReg {
+  margin-top: 10px;
+  font-size: 0.83rem;
+  text-align: center;
+  min-height: 20px;
+  border-radius: 8px;
+  padding: 0 0.5rem;
+
+  &.error { color: var(--error); }
+  &.exito { color: var(--exito); }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .wrapper {
+    flex-direction: column;
+    border-radius: 16px;
+  }
+
+  .panel-izq {
+    width: 100%;
+    padding: 2rem;
+    min-height: auto;
+  }
+
+  .panel-izq-copy,
+  .features { display: none; }
+
+  .panel-der { padding: 2rem 1.5rem; }
+}

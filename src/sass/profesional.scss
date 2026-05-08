@@ -1,0 +1,204 @@
+// Estilos específicos del panel de profesional
+
+.page-profesional .navbar-brand-dot {
+  background: var(--verde);
+}
+
+.rol-badge {
+  font-size: 0.72rem;
+  background: var(--verde-bg);
+  color: var(--verde);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+.main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.8rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    font-size: 0.88rem;
+    color: var(--gris);
+  }
+}
+
+// ── Estado vacío ──────────────────────────────────────────────────────────────
+.estado-vacio {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+}
+
+.estado-vacio-icono {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.estado-vacio h2 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.estado-vacio p {
+  font-size: 0.88rem;
+  color: var(--gris);
+  max-width: 380px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.estado-vacio-hint {
+  font-size: 0.82rem;
+  color: var(--gris-claro);
+  margin-top: 0.5rem;
+}
+
+// ── Vista paciente ────────────────────────────────────────────────────────────
+.paciente-header {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.paciente-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.paciente-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--verde-bg);
+  color: var(--verde);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.paciente-nombre {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.paciente-meta {
+  font-size: 0.82rem;
+  color: var(--gris);
+  margin-top: 2px;
+}
+
+.btn-nuevo-registro {
+  padding: 0.65rem 1.2rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover { background: #15803d; }
+}
+
+.historial-lista {
+  margin-bottom: 2rem;
+}
+
+// ── Modal nuevo registro ──────────────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1rem;
+
+  &.hidden { display: none; }
+}
+
+.modal {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-titulo {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-cancelar {
+  padding: 0.65rem 1.2rem;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--gris);
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+
+  &:hover { background: var(--fondo); }
+}
+
+.btn-guardar {
+  padding: 0.65rem 1.4rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover     { background: #15803d; }
+  &:disabled  { opacity: 0.6; cursor: not-allowed; }
+}
