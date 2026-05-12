@@ -70,6 +70,7 @@ export async function initDb() {
   for (const col of ['archivo_path TEXT', 'archivo_nombre TEXT', 'archivo_tipo TEXT']) {
     try { await db.exec(`ALTER TABLE medical_records ADD COLUMN ${col}`); } catch (_) {}
   }
+  try { await db.exec('ALTER TABLE professional_profiles ADD COLUMN foto_path TEXT'); } catch (_) {}
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS qr_tokens (

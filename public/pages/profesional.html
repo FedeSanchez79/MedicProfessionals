@@ -21,6 +21,9 @@
     <span class="rol-badge">Profesional</span>
   </div>
   <div class="navbar-right">
+    <button class="btn-perfil" id="btn-perfil" title="Mi perfil">
+      <div class="navbar-avatar" id="navbar-avatar">—</div>
+    </button>
     <span class="navbar-nombre">Dr/a. <span id="nombre-display">—</span></span>
     <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
   </div>
@@ -121,6 +124,49 @@
       <div class="modal-footer">
         <button type="button" class="btn-cancelar" id="btn-cancelar">Cancelar</button>
         <button type="submit" class="btn-guardar" id="btn-guardar">Guardar registro</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal perfil -->
+<div class="modal-overlay hidden" id="modal-perfil-overlay">
+  <div class="modal modal-perfil">
+    <div class="modal-titulo">Mi perfil</div>
+
+    <div class="perfil-foto-section">
+      <div class="perfil-foto-wrapper">
+        <div class="perfil-foto" id="perfil-foto-display">
+          <span id="perfil-foto-iniciales">—</span>
+          <img id="perfil-foto-img" class="hidden" alt="Foto de perfil" />
+        </div>
+        <label class="perfil-foto-btn" for="input-foto" title="Cambiar foto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </label>
+        <input type="file" id="input-foto" accept="image/*" class="hidden" />
+      </div>
+      <p class="perfil-foto-hint">Hacé clic en el ícono para cambiar la foto</p>
+    </div>
+
+    <form id="form-perfil">
+      <div class="campo">
+        <label for="perfil-especialidad">Especialidad</label>
+        <input type="text" id="perfil-especialidad" placeholder="Ej: Cardiología, Pediatría..." />
+      </div>
+      <div class="campo">
+        <label for="perfil-matricula">Matrícula médica</label>
+        <input type="text" id="perfil-matricula" placeholder="Ej: MP 12345" />
+      </div>
+      <div class="campo">
+        <label for="perfil-institucion">Institución (opcional)</label>
+        <input type="text" id="perfil-institucion" placeholder="Ej: Hospital Italiano" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancelar" id="btn-cancelar-perfil">Cancelar</button>
+        <button type="submit" class="btn-guardar" id="btn-guardar-perfil">Guardar perfil</button>
       </div>
     </form>
   </div>

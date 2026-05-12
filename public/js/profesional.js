@@ -182,6 +182,114 @@ document.getElementById('archivo').addEventListener('change', (e) => {
   preview.classList.remove('hidden');
 });
 
+// ── Perfil ────────────────────────────────────────────────────────────────────
+let perfilData = {};
+
+async function cargarPerfil() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/perfil`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!res.ok) return;
+    perfilData = await res.json();
+    actualizarFotoUI(perfilData.foto_path);
+  } catch (_) {}
+}
+
+function iniciales() {
+  return (nombre || 'P').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function actualizarFotoUI(fotaPath) {
+  const navbarAvatar  = document.getElementById('navbar-avatar');
+  const modalIniciales = document.getElementById('perfil-foto-iniciales');
+  const modalImg       = document.getElementById('perfil-foto-img');
+
+  if (fotaPath) {
+    const url = `${API_BASE_URL}/archivo/${fotaPath}?token=${encodeURIComponent(token)}`;
+    navbarAvatar.innerHTML = `<img src="${url}" alt="foto" />`;
+    modalIniciales.classList.add('hidden');
+    modalImg.src = url;
+    modalImg.classList.remove('hidden');
+  } else {
+    const ini = iniciales();
+    navbarAvatar.textContent = ini;
+    modalIniciales.textContent = ini;
+    modalIniciales.classList.remove('hidden');
+    modalImg.classList.add('hidden');
+  }
+}
+
+function abrirModalPerfil() {
+  document.getElementById('perfil-especialidad').value = perfilData.especialidad || '';
+  document.getElementById('perfil-matricula').value    = perfilData.matricula    || '';
+  document.getElementById('perfil-institucion').value  = perfilData.institucion  || '';
+  document.getElementById('modal-perfil-overlay').classList.remove('hidden');
+}
+
+function cerrarModalPerfil() {
+  document.getElementById('modal-perfil-overlay').classList.add('hidden');
+}
+
+document.getElementById('btn-perfil').addEventListener('click', abrirModalPerfil);
+document.getElementById('btn-cancelar-perfil').addEventListener('click', cerrarModalPerfil);
+document.getElementById('modal-perfil-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal-perfil-overlay')) cerrarModalPerfil();
+});
+
+document.getElementById('input-foto').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const formData = new FormData();
+  formData.append('foto', file);
+  try {
+    const res = await fetch(`${API_BASE_URL}/perfil/foto`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.message || 'Error al subir la foto', 'error'); return; }
+    perfilData.foto_path = data.foto_path;
+    actualizarFotoUI(data.foto_path);
+    toast('Foto de perfil actualizada');
+  } catch (_) {
+    toast('Error al subir la foto', 'error');
+  }
+  e.target.value = '';
+});
+
+document.getElementById('form-perfil').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btn-guardar-perfil');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+  const body = {
+    especialidad: document.getElementById('perfil-especialidad').value.trim(),
+    matricula:    document.getElementById('perfil-matricula').value.trim(),
+    institucion:  document.getElementById('perfil-institucion').value.trim()
+  };
+  try {
+    const res = await fetch(`${API_BASE_URL}/perfil`, {
+      method: 'PUT',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok) { toast(data.message || 'Error al guardar el perfil', 'error'); return; }
+    perfilData = { ...perfilData, ...body };
+    cerrarModalPerfil();
+    toast('Perfil guardado correctamente');
+  } catch (_) {
+    toast('Error conectando con el servidor', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar perfil';
+  }
+});
+
+cargarPerfil();
+
 // ── Guardar registro ──────────────────────────────────────────────────────────
 document.getElementById('form-registro').addEventListener('submit', async (e) => {
   e.preventDefault();
