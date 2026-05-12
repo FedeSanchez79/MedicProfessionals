@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { openDb, initDb } from './database.js';
 import pacienteRouter from './routes/paciente.js';
 import { UPLOADS_DIR } from './upload.js';
@@ -12,13 +13,16 @@ import fs from 'fs';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_key';
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, '../../public')));
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
