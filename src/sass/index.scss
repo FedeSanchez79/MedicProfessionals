@@ -12,7 +12,7 @@ body.login-layout {
   display: flex;
   width: 100%;
   max-width: 900px;
-  min-height: 560px;
+  min-height: min(560px, calc(100svh - 2rem));
   background: var(--blanco);
   border-radius: 20px;
   overflow: hidden;
@@ -218,6 +218,16 @@ form {
 }
 
 // ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .wrapper { max-width: 100%; }
+
+  .panel-izq { width: 38%; padding: 2.5rem 2rem; }
+
+  .panel-der { padding: 2.5rem 2rem; }
+
+  .panel-izq-copy h2 { font-size: 1.6rem; }
+}
+
 @media (max-width: 640px) {
   .wrapper {
     flex-direction: column;
@@ -226,7 +236,7 @@ form {
 
   .panel-izq {
     width: 100%;
-    padding: 2rem;
+    padding: 1.75rem 1.5rem;
     min-height: auto;
   }
 
@@ -234,4 +244,24 @@ form {
   .features { display: none; }
 
   .panel-der { padding: 2rem 1.5rem; }
+
+  .fila-2 { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (max-width: 480px) {
+  body.login-layout { padding: 0; align-items: flex-start; }
+
+  .wrapper {
+    border-radius: 0;
+    min-height: 100svh;
+    box-shadow: none;
+  }
+
+  .panel-izq { padding: 1.25rem 1rem; }
+
+  .panel-der { padding: 1.75rem 1.25rem; }
+
+  .form-title { font-size: 1.35rem; }
+
+  .form-sub { margin-bottom: 1.25rem; }
 }
