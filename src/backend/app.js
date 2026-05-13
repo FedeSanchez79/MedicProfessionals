@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
+import https from 'https';
 import { fileURLToPath } from 'url';
 import { openDb, initDb } from './database.js';
 import pacienteRouter from './routes/paciente.js';
@@ -264,11 +265,26 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 });
 
 // ─── Inicializar DB y arrancar servidor ───────────────────────────────────────
+const CERT_KEY  = path.join(__dirname, '../../certs/localhost-key.pem');
+const CERT_FILE = path.join(__dirname, '../../certs/localhost.pem');
+
 initDb()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Medic Professionals corriendo en http://localhost:${PORT}`);
-    });
+    if (fs.existsSync(CERT_KEY) && fs.existsSync(CERT_FILE)) {
+      const sslOptions = {
+        key:  fs.readFileSync(CERT_KEY),
+        cert: fs.readFileSync(CERT_FILE),
+      };
+      https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
+        console.log(`[HTTPS] Medic Professionals → https://localhost:${PORT}`);
+        console.log(`[HTTPS] Red local           → https://192.168.1.64:${PORT}`);
+      });
+    } else {
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`[HTTP]  Medic Professionals → http://localhost:${PORT}`);
+        console.log(`        Para habilitar HTTPS ejecutá: npm run setup:certs`);
+      });
+    }
   })
   .catch(err => {
     console.error('Error inicializando la base de datos:', err);
