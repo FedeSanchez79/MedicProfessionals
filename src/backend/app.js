@@ -268,6 +268,29 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 const CERT_KEY  = path.join(__dirname, '../../certs/localhost-key.pem');
 const CERT_FILE = path.join(__dirname, '../../certs/localhost.pem');
 
+function startServer(server, label) {
+  let retries = 0;
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE' && retries < 5) {
+      retries++;
+      console.log(`[${label}] Puerto ${PORT} ocupado, reintentando (${retries}/5)...`);
+      setTimeout(() => server.listen(PORT, '0.0.0.0'), 1000);
+    } else {
+      console.error(`[${label}] Error al iniciar el servidor:`, err.message);
+      process.exit(1);
+    }
+  });
+
+  // Liberar el puerto limpiamente cuando nodemon reinicia (SIGTERM)
+  process.on('SIGTERM', () => {
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 2000).unref();
+  });
+
+  server.listen(PORT, '0.0.0.0');
+}
+
 initDb()
   .then(() => {
     if (fs.existsSync(CERT_KEY) && fs.existsSync(CERT_FILE)) {
@@ -275,14 +298,26 @@ initDb()
         key:  fs.readFileSync(CERT_KEY),
         cert: fs.readFileSync(CERT_FILE),
       };
-      https.createServer(sslOptions, app).listen(PORT, '0.0.0.0', () => {
+      const server = https.createServer(sslOptions, app);
+
+      // Ignorar errores TLS del cliente (handshake abortado, cert no confiado en móvil)
+      server.on('tlsClientError', () => {});
+
+      server.on('listening', () => {
         console.log(`[HTTPS] Medic Professionals → https://localhost:${PORT}`);
         console.log(`[HTTPS] Red local           → https://192.168.1.64:${PORT}`);
       });
+
+      startServer(server, 'HTTPS');
     } else {
-      app.listen(PORT, '0.0.0.0', () => {
+      const server = app.listen(PORT, '0.0.0.0');
+      server.on('listening', () => {
         console.log(`[HTTP]  Medic Professionals → http://localhost:${PORT}`);
         console.log(`        Para habilitar HTTPS ejecutá: npm run setup:certs`);
+      });
+      server.on('error', (err) => {
+        console.error('[HTTP] Error al iniciar el servidor:', err.message);
+        process.exit(1);
       });
     }
   })
