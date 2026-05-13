@@ -46,6 +46,16 @@
       <p class="estado-vacio-hint">
         El QR del paciente contiene un enlace seguro que expira en 15 minutos.
       </p>
+      <button class="btn-escanear-qr" id="btn-escanear-qr">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+          <rect x="7" y="7" width="3" height="3" rx="1"/>
+          <rect x="14" y="7" width="3" height="3" rx="1"/>
+          <rect x="7" y="14" width="3" height="3" rx="1"/>
+          <path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01"/>
+        </svg>
+        Escanear QR del paciente
+      </button>
     </div>
   </div>
 
@@ -172,8 +182,21 @@
   </div>
 </div>
 
+<!-- Modal escáner QR -->
+<div class="modal-overlay hidden" id="modal-qr-overlay">
+  <div class="modal modal-qr">
+    <div class="modal-titulo">Escanear código QR</div>
+    <p class="qr-instruccion">Apuntá la cámara al código QR generado por el paciente en Medic Data.</p>
+    <div id="qr-reader"></div>
+    <div class="modal-footer qr-modal-footer">
+      <button type="button" class="btn-cancelar" id="btn-cancelar-qr">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div id="mensaje-global"></div>
 
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="../js/profesional.js"></script>
 </body>
 </html>

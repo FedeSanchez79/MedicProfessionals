@@ -663,6 +663,70 @@ form {
   margin-top: 0.5rem;
 }
 
+.btn-escanear-qr {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1.6rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 1.25rem;
+}
+.btn-escanear-qr svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.btn-escanear-qr:hover {
+  background: #15803d;
+}
+.btn-escanear-qr:active {
+  transform: scale(0.97);
+}
+
+.modal-qr {
+  max-width: 500px;
+}
+
+.qr-instruccion {
+  font-size: 0.88rem;
+  color: var(--gris);
+  margin-bottom: 1rem;
+  line-height: 1.55;
+}
+
+.qr-modal-footer {
+  margin-top: 1rem;
+}
+
+#qr-reader {
+  width: 100%;
+  min-height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+}
+#qr-reader video {
+  border-radius: 12px;
+}
+#qr-reader #qr-reader__status_span {
+  display: none;
+}
+#qr-reader #qr-reader__scan_region {
+  border-radius: 12px;
+  overflow: hidden;
+}
+#qr-reader #qr-reader__scan_region img {
+  filter: invert(1) opacity(0.7);
+}
+
 .paciente-header {
   background: var(--blanco);
   border: 1px solid var(--borde);
@@ -1013,6 +1077,13 @@ form {
   .estado-vacio-icono {
     font-size: 2.5rem;
   }
+  .btn-escanear-qr {
+    width: 100%;
+    justify-content: center;
+  }
+  #qr-reader {
+    min-height: 260px;
+  }
   .paciente-header {
     padding: 1rem;
     flex-direction: column;
@@ -1060,5 +1131,3 @@ form {
     padding: 2rem 1rem;
   }
 }
-
-/*# sourceMappingURL=style.css.map */

@@ -43,9 +43,14 @@ async function accederPorQR(qrToken) {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
+    if (res.status === 410) {
+      toast('QR vencido. Pedile al paciente que genere uno nuevo.', 'error');
+      return;
+    }
+
     if (!res.ok) {
       const data = await res.json();
-      toast(data.message || 'QR inválido o expirado', 'error');
+      toast(data.message || 'QR inválido', 'error');
       return;
     }
 
@@ -141,6 +146,73 @@ function renderHistorial(historial) {
     `).join('')}
   </div>`;
 }
+
+// ── Escáner QR ────────────────────────────────────────────────────────────────
+let qrScanner = null;
+let qrEscaneando = false;
+
+function extractTokenFromQR(texto) {
+  try {
+    const url = new URL(texto);
+    const partes = url.pathname.split('/').filter(Boolean);
+    return partes[partes.length - 1] || null;
+  } catch {
+    const t = texto.trim();
+    return t.length > 0 ? t : null;
+  }
+}
+
+async function cerrarEscaner() {
+  document.getElementById('modal-qr-overlay').classList.add('hidden');
+  if (qrScanner) {
+    try {
+      if (qrScanner.isScanning) await qrScanner.stop();
+    } catch (_) {}
+    qrScanner = null;
+  }
+  qrEscaneando = false;
+}
+
+function abrirEscaner() {
+  if (qrEscaneando) return;
+  document.getElementById('qr-reader').innerHTML = '';
+  document.getElementById('modal-qr-overlay').classList.remove('hidden');
+
+  qrScanner = new Html5Qrcode('qr-reader');
+  qrEscaneando = true;
+
+  qrScanner.start(
+    { facingMode: 'environment' },
+    {
+      fps: 10,
+      qrbox: (w, h) => {
+        const size = Math.floor(Math.min(w, h) * 0.7);
+        return { width: size, height: size };
+      }
+    },
+    async (decodedText) => {
+      if (!qrEscaneando) return;
+      qrEscaneando = false;
+      await cerrarEscaner();
+      const qrToken = extractTokenFromQR(decodedText);
+      if (!qrToken) {
+        toast('QR inválido', 'error');
+        return;
+      }
+      accederPorQR(qrToken);
+    },
+    () => {}
+  ).catch(() => {
+    toast('No se pudo acceder a la cámara. Verificá los permisos del navegador.', 'error');
+    cerrarEscaner();
+  });
+}
+
+document.getElementById('btn-escanear-qr').addEventListener('click', abrirEscaner);
+document.getElementById('btn-cancelar-qr').addEventListener('click', cerrarEscaner);
+document.getElementById('modal-qr-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal-qr-overlay')) cerrarEscaner();
+});
 
 // ── Modal nuevo registro ──────────────────────────────────────────────────────
 function cerrarModal() {
