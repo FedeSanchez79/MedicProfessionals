@@ -3,12 +3,15 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
   : '';
 
 // ─── Referencias DOM ──────────────────────────────────────────────────────────
-const loginForm       = document.getElementById('loginForm');
-const registerForm    = document.getElementById('registerForm');
-const loginSection    = document.getElementById('loginSection');
-const registerSection = document.getElementById('registerSection');
-const messageDiv      = document.getElementById('message');
-const messageRegDiv   = document.getElementById('messageReg');
+const loginForm        = document.getElementById('loginForm');
+const registerForm     = document.getElementById('registerForm');
+const forgotForm       = document.getElementById('forgotForm');
+const loginSection     = document.getElementById('loginSection');
+const registerSection  = document.getElementById('registerSection');
+const forgotSection    = document.getElementById('forgotSection');
+const messageDiv       = document.getElementById('message');
+const messageRegDiv    = document.getElementById('messageReg');
+const messageForgotDiv = document.getElementById('messageForgot');
 
 // ─── Utilidades ───────────────────────────────────────────────────────────────
 function showMessage(msg, isError = true, registro = false) {
@@ -18,9 +21,16 @@ function showMessage(msg, isError = true, registro = false) {
   div.className = isError ? 'error' : 'exito';
 }
 
+function showForgotMessage(msg, isError = true) {
+  if (!messageForgotDiv) return;
+  messageForgotDiv.textContent = msg;
+  messageForgotDiv.className = isError ? 'error' : 'exito';
+}
+
 function limpiarMensajes() {
-  if (messageDiv)    { messageDiv.textContent = '';    messageDiv.className = ''; }
-  if (messageRegDiv) { messageRegDiv.textContent = ''; messageRegDiv.className = ''; }
+  if (messageDiv)       { messageDiv.textContent = '';       messageDiv.className = ''; }
+  if (messageRegDiv)    { messageRegDiv.textContent = '';    messageRegDiv.className = ''; }
+  if (messageForgotDiv) { messageForgotDiv.textContent = ''; messageForgotDiv.className = ''; }
 }
 
 // ─── Alternar formularios ─────────────────────────────────────────────────────
@@ -36,12 +46,74 @@ document.getElementById('showLoginBtn')?.addEventListener('click', () => {
   limpiarMensajes();
 });
 
+document.getElementById('showForgotBtn')?.addEventListener('click', () => {
+  loginSection.classList.add('hidden');
+  forgotSection.classList.remove('hidden');
+  limpiarMensajes();
+});
+
+document.getElementById('showLoginFromForgot')?.addEventListener('click', () => {
+  forgotSection.classList.add('hidden');
+  loginSection.classList.remove('hidden');
+  limpiarMensajes();
+});
+
+// ─── Mostrar/ocultar contraseña ───────────────────────────────────────────────
+function setupTogglePassword(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const btn = input.parentElement?.querySelector('.toggle-password');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.querySelector('.eye-show').classList.toggle('hidden', show);
+    btn.querySelector('.eye-hide').classList.toggle('hidden', !show);
+    btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  });
+}
+
+setupTogglePassword('password');
+setupTogglePassword('passwordReg');
+setupTogglePassword('confirmPasswordReg');
+
 // ─── Validaciones ─────────────────────────────────────────────────────────────
 const nameRegex     = /^[A-Za-záéíóúÁÉÍÓÚñÑ\s]+$/;
 const phoneRegex    = /^\+?[\d\s\-]{6,20}$/;
 const usernameRegex = /^[A-Za-z0-9_]+$/;
 const emailRegex    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};:'",.<>/?\\|`~]).{8,16}$/;
+
+// ─── Olvidé contraseña ────────────────────────────────────────────────────────
+forgotForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  limpiarMensajes();
+
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!emailRegex.test(email)) {
+    showForgotMessage('El email no es válido.');
+    return;
+  }
+
+  const btn = forgotForm.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    await fetch(`${API_BASE_URL}/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    showForgotMessage('Si el email está registrado, recibirás un link en breve.', false);
+    forgotForm.reset();
+  } catch {
+    showForgotMessage('Error conectando con el servidor.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Enviar link';
+  }
+});
 
 // ─── Registro ─────────────────────────────────────────────────────────────────
 registerForm?.addEventListener('submit', async (e) => {

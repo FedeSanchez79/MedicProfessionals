@@ -1049,6 +1049,77 @@ form {
   text-align: center;
 }
 
+/* ─── Mostrar/ocultar contraseña ────────────────────────────────────────────── */
+.input-password {
+  position: relative;
+}
+.input-password input {
+  padding-right: 2.75rem;
+}
+.toggle-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--gris-claro);
+  display: flex;
+  align-items: center;
+  width: auto;
+  line-height: 0;
+  transition: color 0.15s;
+}
+.toggle-password:hover {
+  color: var(--gris);
+}
+.toggle-password svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ─── Link "¿Olvidaste tu contraseña?" ──────────────────────────────────────── */
+.link-olvide {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+.link-olvide button {
+  background: none;
+  border: none;
+  color: var(--gris-claro);
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  padding: 0;
+  width: auto;
+  transition: color 0.15s;
+}
+.link-olvide button:hover {
+  color: var(--verde);
+  text-decoration: underline;
+}
+
+/* ─── Mensaje forgot/reset ───────────────────────────────────────────────────── */
+#messageForgot,
+#messageReset {
+  margin-top: 10px;
+  font-size: 0.83rem;
+  text-align: center;
+  min-height: 20px;
+  border-radius: 8px;
+  padding: 0 0.5rem;
+}
+#messageForgot.error, #messageReset.error { color: var(--error); }
+#messageForgot.exito, #messageReset.exito { color: var(--exito); }
+
 @media (max-width: 768px) {
   .main {
     padding: 1.5rem 1.25rem;

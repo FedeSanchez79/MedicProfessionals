@@ -72,6 +72,9 @@ export async function initDb() {
   }
   try { await db.exec('ALTER TABLE professional_profiles ADD COLUMN foto_path TEXT'); } catch (_) {}
 
+  // Migración: agregar professional_id a medical_records si MedicData creó la tabla sin ella
+  try { await db.exec('ALTER TABLE medical_records ADD COLUMN professional_id INTEGER'); } catch (_) {}
+
   await db.exec(`
     CREATE TABLE IF NOT EXISTS qr_tokens (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -93,6 +96,18 @@ export async function initDb() {
       accessed_at     DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (patient_id)  REFERENCES users(id),
       FOREIGN KEY (accessed_by) REFERENCES users(id)
+    );
+  `);
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id    INTEGER NOT NULL,
+      token      TEXT    NOT NULL UNIQUE,
+      expires_at DATETIME NOT NULL,
+      used       INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id)
     );
   `);
 

@@ -38,10 +38,30 @@ if (qrToken) {
 }
 
 async function accederPorQR(qrToken) {
+  const endpoint = `${API_BASE_URL}/qr/acceder/${qrToken}`;
+  console.log('[QR] ══════════════════════════════════════');
+  console.log('[QR] API_BASE_URL:', JSON.stringify(API_BASE_URL));
+  console.log('[QR] window.location.hostname:', window.location.hostname);
+  console.log('[QR] window.location.href:', window.location.href);
+  console.log('[QR] Token que se va a validar:', qrToken);
+  console.log('[QR] Endpoint completo de la request:', endpoint);
+  console.log('[QR] Token de sesión (JWT) presente:', !!token);
   try {
-    const res = await fetch(`${API_BASE_URL}/qr/acceder/${qrToken}`, {
+    console.log('[QR] → Haciendo fetch a:', endpoint);
+    const res = await fetch(endpoint, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+
+    console.log('[QR] ← Status HTTP recibido:', res.status, res.statusText);
+    console.log('[QR] ← URL efectiva de la respuesta:', res.url);
+
+    // Leer el cuerpo una sola vez y loguearlo completo
+    const rawText = await res.text();
+    console.log('[QR] ← Respuesta completa (texto):', rawText);
+
+    let data;
+    try { data = JSON.parse(rawText); } catch { data = { message: rawText }; }
+    console.log('[QR] ← Respuesta parseada:', data);
 
     if (res.status === 410) {
       toast('QR vencido. Pedile al paciente que genere uno nuevo.', 'error');
@@ -49,15 +69,15 @@ async function accederPorQR(qrToken) {
     }
 
     if (!res.ok) {
-      const data = await res.json();
       toast(data.message || 'QR inválido', 'error');
       return;
     }
 
-    const data = await res.json();
+    console.log('[QR] Acceso exitoso, paciente:', data.paciente?.firstName, data.paciente?.lastName);
     cargarVistaPaciente(data.paciente, data.historial);
 
   } catch (err) {
+    console.error('[QR] Error de red:', err);
     toast('Error al acceder con el QR', 'error');
   }
 }
@@ -152,12 +172,22 @@ let qrScanner = null;
 let qrEscaneando = false;
 
 function extractTokenFromQR(texto) {
+  console.log('[QR] Texto escaneado:', texto);
   try {
     const url = new URL(texto);
+    const tokenParam = url.searchParams.get('token');
+    if (tokenParam) {
+      console.log('[QR] Token extraído de ?token=', tokenParam);
+      return tokenParam;
+    }
+    // Fallback: si el token viene en el path (formato alternativo)
     const partes = url.pathname.split('/').filter(Boolean);
-    return partes[partes.length - 1] || null;
+    const pathToken = partes[partes.length - 1] || null;
+    console.log('[QR] Token extraído del path:', pathToken);
+    return pathToken;
   } catch {
     const t = texto.trim();
+    console.log('[QR] QR no es URL, usando texto directo:', t);
     return t.length > 0 ? t : null;
   }
 }
@@ -191,10 +221,13 @@ function abrirEscaner() {
       }
     },
     async (decodedText) => {
+      console.log('[QR SCAN] ══════════════════════════════════════');
+      console.log('[QR SCAN] Texto recibido del escáner:', decodedText);
       if (!qrEscaneando) return;
       qrEscaneando = false;
       await cerrarEscaner();
       const qrToken = extractTokenFromQR(decodedText);
+      console.log('[QR SCAN] Token final a enviar al servidor:', qrToken);
       if (!qrToken) {
         toast('QR inválido', 'error');
         return;

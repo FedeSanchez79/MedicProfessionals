@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 import path from 'path';
 import https from 'https';
 import { fileURLToPath } from 'url';
@@ -20,6 +22,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_key';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
+
+const passwordResetRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};:'",.<>/?\\|`~]).{8,16}$/;
 
 app.use(cors());
 app.use(express.json());
@@ -121,6 +133,101 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// ─── Recuperación de contraseña ───────────────────────────────────────────────
+
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: 'Email requerido' });
+
+  // Siempre responder igual para no revelar si el email existe
+  res.json({ message: 'Si el email está registrado, recibirás un link en breve.' });
+
+  try {
+    const db = await openDb();
+    const user = await db.get(
+      "SELECT id FROM users WHERE email = ? AND role = 'professional'",
+      email
+    );
+    if (!user) return;
+
+    // Invalidar tokens anteriores del mismo usuario
+    await db.run(
+      'UPDATE password_reset_tokens SET used = 1 WHERE user_id = ?',
+      user.id
+    );
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 3_600_000).toISOString();
+
+    await db.run(
+      'INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)',
+      [user.id, token, expiresAt]
+    );
+
+    const appUrl = process.env.APP_URL || `https://localhost:${PORT}`;
+    const resetUrl = `${appUrl}/pages/reset-password.html?token=${token}`;
+
+    await transporter.sendMail({
+      from: `"Medic Professionals" <${process.env.MAIL_USER}>`,
+      to: email,
+      subject: 'Restablecer contraseña — Medic Professionals',
+      html: `
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:2rem;">
+          <h2 style="color:#16A34A;margin-bottom:1rem;">Restablecer contraseña</h2>
+          <p style="color:#374151;line-height:1.6;margin-bottom:1.5rem;">
+            Recibimos una solicitud para restablecer la contraseña de tu cuenta en Medic Professionals.
+          </p>
+          <a href="${resetUrl}" style="display:inline-block;background:#16A34A;color:white;text-decoration:none;padding:0.75rem 1.5rem;border-radius:10px;font-weight:500;margin-bottom:1.5rem;">
+            Restablecer contraseña
+          </a>
+          <p style="color:#6B7280;font-size:0.85rem;line-height:1.6;">
+            Este link expira en 1 hora. Si no solicitaste esto, podés ignorar este email.
+          </p>
+          <hr style="border:none;border-top:1px solid #E5E7EB;margin:1.5rem 0;" />
+          <p style="color:#9CA3AF;font-size:0.78rem;">
+            Si el botón no funciona, copiá este link:<br/>${resetUrl}
+          </p>
+        </div>
+      `,
+    });
+  } catch (err) {
+    console.error('[forgot-password]', err.message);
+  }
+});
+
+app.post('/reset-password', async (req, res) => {
+  const { token, password } = req.body;
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token y contraseña requeridos' });
+  }
+  if (!passwordResetRegex.test(password)) {
+    return res.status(400).json({
+      message: 'La contraseña debe tener 8-16 caracteres, una mayúscula, un número y un símbolo.',
+    });
+  }
+
+  try {
+    const db = await openDb();
+    const record = await db.get(
+      'SELECT * FROM password_reset_tokens WHERE token = ? AND used = 0',
+      token
+    );
+
+    if (!record || new Date() > new Date(record.expires_at)) {
+      return res.status(400).json({ message: 'El link expiró o ya fue utilizado.' });
+    }
+
+    const hashed = await bcrypt.hash(password, 10);
+    await db.run('UPDATE users SET password = ? WHERE id = ?', [hashed, record.user_id]);
+    await db.run('UPDATE password_reset_tokens SET used = 1 WHERE id = ?', record.id);
+
+    res.json({ message: 'Contraseña actualizada correctamente.' });
+  } catch (err) {
+    console.error('Error en /reset-password:', err);
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+});
+
 // ─── Rutas protegidas ─────────────────────────────────────────────────────────
 
 // Perfil profesional
@@ -218,48 +325,64 @@ app.get('/archivo/:filename', (req, res) => {
 });
 
 app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
+  console.log('[QR BACKEND] ══════════════════════════════════════');
+  console.log('[QR BACKEND] Token recibido en params:', req.params.token);
+  console.log('[QR BACKEND] Usuario autenticado - id:', req.user?.id, '| role:', req.user?.role);
+
   if (req.user.role !== 'professional') {
     return res.status(403).json({ message: 'Solo profesionales pueden escanear QR' });
   }
 
   try {
     const db = await openDb();
-    const qr = await db.get(
-      `SELECT * FROM qr_tokens WHERE token = ? AND used = 0`,
+
+    // MedicData guarda el token en users.qr_token (no en la tabla qr_tokens)
+    const paciente = await db.get(
+      `SELECT id, firstName, lastName, email, phone, qr_token_expires
+       FROM users WHERE qr_token = ? AND role = 'patient'`,
       req.params.token
     );
+    console.log('[QR BACKEND] Resultado de la búsqueda en users.qr_token:', paciente ? `id=${paciente.id}` : 'NULL — no encontrado');
 
-    if (!qr) {
+    if (!paciente) {
       return res.status(404).json({ message: 'QR inválido o ya utilizado' });
     }
 
-    if (new Date() > new Date(qr.expires_at)) {
-      await db.run(`UPDATE qr_tokens SET used = 1 WHERE id = ?`, qr.id);
+    console.log('[QR BACKEND] Token encontrado. expires_at:', paciente.qr_token_expires, '| Ahora:', new Date().toISOString());
+
+    if (new Date() > new Date(paciente.qr_token_expires)) {
+      console.log('[QR BACKEND] Token VENCIDO');
+      await db.run(`UPDATE users SET qr_token = NULL, qr_token_expires = NULL WHERE id = ?`, paciente.id);
       return res.status(410).json({ message: 'El QR expiró. El paciente debe generar uno nuevo.' });
     }
 
-    await db.run(
-      `INSERT INTO access_log (patient_id, accessed_by, metodo) VALUES (?, ?, 'qr')`,
-      [qr.patient_id, req.user.id]
-    );
+    // Invalidar el token para uso único
+    await db.run(`UPDATE users SET qr_token = NULL, qr_token_expires = NULL WHERE id = ?`, paciente.id);
 
-    const paciente = await db.get(
-      `SELECT id, firstName, lastName, email, phone FROM users WHERE id = ?`,
-      qr.patient_id
-    );
+    try {
+      await db.run(
+        `INSERT INTO access_log (patient_id, accessed_by, metodo) VALUES (?, ?, 'qr')`,
+        [paciente.id, req.user.id]
+      );
+    } catch (_) {}
 
     const historial = await db.all(
-      `SELECT mr.*, u.firstName as prof_nombre, u.lastName as prof_apellido
+      `SELECT mr.*,
+              COALESCE(u.firstName, '') as prof_nombre,
+              COALESCE(u.lastName,  '') as prof_apellido
        FROM medical_records mr
-       JOIN users u ON u.id = mr.professional_id
+       LEFT JOIN users u ON u.id = mr.professional_id
        WHERE mr.patient_id = ? AND mr.activo = 1
        ORDER BY mr.created_at DESC`,
-      qr.patient_id
+      paciente.id
     );
+    console.log('[QR BACKEND] Registros de historial encontrados:', historial.length);
+    console.log('[QR BACKEND] ✓ Enviando respuesta exitosa');
 
-    res.json({ paciente, historial });
+    const { qr_token_expires, ...pacienteSinMeta } = paciente;
+    res.json({ paciente: pacienteSinMeta, historial });
   } catch (error) {
-    console.error('Error accediendo por QR:', error);
+    console.error('[QR BACKEND] Error accediendo por QR:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
