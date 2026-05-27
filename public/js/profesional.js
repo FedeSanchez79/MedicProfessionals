@@ -1,5 +1,5 @@
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-  ? 'http://localhost:3001' : '';
+  ? 'https://localhost:3001' : '';
 
 // ── Verificar sesión ──────────────────────────────────────────────────────────
 const token  = sessionStorage.getItem('token');
@@ -26,6 +26,7 @@ function toast(msg, tipo = 'exito') {
 // ── Logout ────────────────────────────────────────────────────────────────────
 document.getElementById('btn-logout').addEventListener('click', () => {
   sessionStorage.clear();
+  localStorage.removeItem('prof_token');
   window.location.href = '/';
 });
 

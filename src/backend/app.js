@@ -171,6 +171,7 @@ app.post('/forgot-password', async (req, res) => {
       from: `"Medic Professionals" <${process.env.MAIL_USER}>`,
       to: email,
       subject: 'Restablecer contraseña — Medic Professionals',
+      charset: 'utf-8',
       html: `
         <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:2rem;">
           <h2 style="color:#16A34A;margin-bottom:1rem;">Restablecer contraseña</h2>
@@ -325,10 +326,6 @@ app.get('/archivo/:filename', (req, res) => {
 });
 
 app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
-  console.log('[QR BACKEND] ══════════════════════════════════════');
-  console.log('[QR BACKEND] Token recibido en params:', req.params.token);
-  console.log('[QR BACKEND] Usuario autenticado - id:', req.user?.id, '| role:', req.user?.role);
-
   if (req.user.role !== 'professional') {
     return res.status(403).json({ message: 'Solo profesionales pueden escanear QR' });
   }
@@ -338,20 +335,17 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 
     // MedicData guarda el token en users.qr_token (no en la tabla qr_tokens)
     const paciente = await db.get(
-      `SELECT id, firstName, lastName, email, phone, qr_token_expires
+      `SELECT id, firstName, lastName, email, phone,
+              dni, fecha_nacimiento, cobertura_medica, numero_afiliado,
+              qr_token_expires
        FROM users WHERE qr_token = ? AND role = 'patient'`,
       req.params.token
     );
-    console.log('[QR BACKEND] Resultado de la búsqueda en users.qr_token:', paciente ? `id=${paciente.id}` : 'NULL — no encontrado');
-
     if (!paciente) {
       return res.status(404).json({ message: 'QR inválido o ya utilizado' });
     }
 
-    console.log('[QR BACKEND] Token encontrado. expires_at:', paciente.qr_token_expires, '| Ahora:', new Date().toISOString());
-
     if (new Date() > new Date(paciente.qr_token_expires)) {
-      console.log('[QR BACKEND] Token VENCIDO');
       await db.run(`UPDATE users SET qr_token = NULL, qr_token_expires = NULL WHERE id = ?`, paciente.id);
       return res.status(410).json({ message: 'El QR expiró. El paciente debe generar uno nuevo.' });
     }
@@ -376,9 +370,6 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
        ORDER BY mr.created_at DESC`,
       paciente.id
     );
-    console.log('[QR BACKEND] Registros de historial encontrados:', historial.length);
-    console.log('[QR BACKEND] ✓ Enviando respuesta exitosa');
-
     const { qr_token_expires, ...pacienteSinMeta } = paciente;
     res.json({ paciente: pacienteSinMeta, historial });
   } catch (error) {

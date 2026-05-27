@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial del paciente — Medic Professionals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .datos-paciente {
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .datos-paciente-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 1.25rem;
+    }
+    .datos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .dato-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .dato-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--gris-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .dato-valor {
+      font-size: 0.92rem;
+      color: var(--texto);
+      font-weight: 400;
+    }
+    .dato-valor.vacio {
+      color: var(--gris-claro);
+      font-style: italic;
+    }
+    .estado-cargando {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 16px;
+      color: var(--gris);
+      font-size: 0.9rem;
+    }
+    .estado-error {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--error-bg);
+      border: 1px solid #FCA5A5;
+      border-radius: 16px;
+      color: var(--error);
+    }
+    .estado-error h2 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .estado-error p {
+      font-size: 0.88rem;
+      opacity: 0.85;
+    }
+
+    /* ── Panel nueva atención ──────────────────────────────────────────────── */
+    .btn-nueva-atencion {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.52rem 1rem;
+      background: var(--verde);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      font-family: "DM Sans", sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-nueva-atencion:hover { background: #15803d; }
+
+    .panel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      padding: 0.48rem 1rem;
+      font-size: 0.85rem;
+      color: var(--gris);
+      cursor: pointer;
+      font-family: "DM Sans", sans-serif;
+      transition: all 0.2s;
+    }
+    .btn-volver:hover { background: var(--fondo); color: var(--texto); }
+
+    .paso-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .paso-item {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      color: var(--gris-claro);
+      background: var(--fondo);
+      border: 1px solid var(--borde);
+      transition: all 0.2s;
+    }
+    .paso-item.activo {
+      background: var(--verde-bg);
+      color: var(--verde);
+      border-color: #86EFAC;
+    }
+    .paso-separator {
+      color: var(--gris-claro);
+      font-size: 0.75rem;
+    }
+
+    .card-seccion {
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-seccion-titulo {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--gris-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+    }
+
+    .campos-readonly {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .campo-readonly {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .campo-readonly .dato-valor {
+      font-size: 0.88rem;
+    }
+
+    .panel-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      padding-top: 0.5rem;
+    }
+
+    .error-inline {
+      background: var(--error-bg);
+      color: var(--error);
+      border: 1px solid #FCA5A5;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    .error-inline.hidden { display: none; }
+
+    .error-archivo {
+      font-size: 0.78rem;
+      color: var(--error);
+      margin-top: 4px;
+    }
+    .error-archivo.hidden { display: none; }
+
+    /* Paso 2: tarjeta preview */
+    .preview-card {
+      background: var(--blanco);
+      border: 1px solid var(--borde);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .preview-card-titulo {
+      font-family: "DM Serif Display", serif;
+      font-size: 1.15rem;
+      color: var(--texto);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--borde);
+    }
+    .preview-seccion {
+      margin-bottom: 1.25rem;
+    }
+    .preview-seccion:last-child { margin-bottom: 0; }
+    .preview-seccion-titulo {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--gris-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.75rem;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .preview-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .preview-item-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--gris-claro);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .preview-item-value {
+      font-size: 0.88rem;
+      color: var(--texto);
+    }
+    .preview-item-value.vacio {
+      color: var(--gris-claro);
+      font-style: italic;
+    }
+    .preview-descripcion {
+      font-size: 0.88rem;
+      color: var(--texto);
+      line-height: 1.6;
+      padding: 0.75rem;
+      background: var(--fondo);
+      border-radius: 8px;
+      border: 1px solid var(--borde);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .preview-adjunto-img {
+      max-height: 180px;
+      width: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid var(--borde);
+      display: block;
+    }
+    .preview-adjunto-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.6rem 0.9rem;
+      background: var(--fondo);
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--gris);
+    }
+
+    @media (max-width: 480px) {
+      .datos-paciente { padding: 1rem; }
+      .datos-grid { grid-template-columns: 1fr 1fr; }
+      .panel-footer { flex-direction: column-reverse; }
+      .panel-footer .btn-cancelar,
+      .panel-footer .btn-guardar {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+      }
+      .card-seccion { padding: 1rem; }
+    }
+  </style>
+</head>
+<body class="page-profesional">
+
+<nav class="navbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <a href="/pages/profesional.html" class="navbar-brand">
+      <div class="navbar-brand-dot"></div>
+      Medic Professionals
+    </a>
+    <span class="rol-badge">Profesional</span>
+  </div>
+  <div class="navbar-right">
+    <span class="navbar-nombre">Dr/a. <span id="nombre-display">—</span></span>
+    <button class="btn-logout" id="btn-logout">Cerrar sesión</button>
+  </div>
+</nav>
+
+<main class="main">
+
+  <div class="page-header">
+    <h1>Historial del paciente</h1>
+    <p>Datos obtenidos mediante código QR.</p>
+  </div>
+
+  <div id="contenido">
+    <div class="estado-cargando">Verificando acceso…</div>
+  </div>
+
+  <!-- Panel: Nueva atención médica -->
+  <div id="panel-nueva-atencion" class="hidden">
+
+    <div class="panel-nav">
+      <button class="btn-volver" id="btn-volver-historial">← Volver al historial</button>
+      <div class="paso-indicator">
+        <span class="paso-item activo" id="ind-paso-1">1 · Datos</span>
+        <span class="paso-separator">→</span>
+        <span class="paso-item" id="ind-paso-2">2 · Revisión</span>
+      </div>
+    </div>
+
+    <!-- Paso 1: Formulario -->
+    <div id="form-paso-1">
+
+      <div class="card-seccion">
+        <div class="card-seccion-titulo">Profesional a cargo</div>
+        <div class="campos-readonly">
+          <div class="campo-readonly">
+            <span class="dato-label">Nombre y apellido</span>
+            <span class="dato-valor" id="ro-nombre">—</span>
+          </div>
+          <div class="campo-readonly">
+            <span class="dato-label">Matrícula</span>
+            <span class="dato-valor" id="ro-matricula">—</span>
+          </div>
+          <div class="campo-readonly">
+            <span class="dato-label">Institución</span>
+            <span class="dato-valor" id="ro-institucion">—</span>
+          </div>
+          <div class="campo-readonly">
+            <span class="dato-label">Fecha y hora</span>
+            <span class="dato-valor" id="ro-fecha">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-seccion">
+        <div class="card-seccion-titulo">Atención médica</div>
+
+        <div class="campo">
+          <label for="at-tipo">Tipo de práctica</label>
+          <select id="at-tipo">
+            <option value="">Seleccioná un tipo</option>
+            <option value="consulta">Consulta médica</option>
+            <option value="estudio">Estudio médico</option>
+            <option value="practica">Práctica médica</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="at-subtipo">Subtipo</label>
+          <select id="at-subtipo" disabled>
+            <option value="">Primero seleccioná un tipo</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="at-descripcion">Descripción / notas</label>
+          <textarea id="at-descripcion" rows="4" placeholder="Observaciones, diagnóstico, indicaciones…"></textarea>
+        </div>
+
+        <div class="campo campo-archivo">
+          <label for="at-adjunto">Adjunto <span style="color:var(--gris-claro);font-weight:400">(opcional)</span></label>
+          <input type="file" id="at-adjunto" accept="image/*,.pdf">
+          <span class="archivo-hint">Imágenes o PDF · máximo 5 MB</span>
+          <div id="at-adjunto-error" class="error-archivo hidden"></div>
+          <div id="at-adjunto-preview" class="archivo-preview hidden"></div>
+        </div>
+      </div>
+
+      <div id="error-paso-1" class="error-inline hidden"></div>
+
+      <div class="panel-footer">
+        <button type="button" id="btn-cancelar-atencion" class="btn-cancelar">Cancelar</button>
+        <button type="button" id="btn-previsualizar" class="btn-guardar">Previsualizar →</button>
+      </div>
+    </div>
+
+    <!-- Paso 2: Previsualización -->
+    <div id="form-paso-2" class="hidden">
+
+      <div id="preview-contenido" class="preview-card">
+        <!-- populado por JS -->
+      </div>
+
+      <div id="error-paso-2" class="error-inline hidden"></div>
+
+      <div class="panel-footer">
+        <button type="button" id="btn-volver-editar" class="btn-cancelar">← Volver a editar</button>
+        <button type="button" id="btn-confirmar" class="btn-guardar">Confirmar y guardar</button>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<div id="mensaje-global"></div>
+
+<script>
+const API = 'https://localhost:3001';
+
+const jwtToken = sessionStorage.getItem('token');
+const role     = sessionStorage.getItem('role');
+const nombre   = sessionStorage.getItem('nombre');
+
+if (!jwtToken || role !== 'professional') {
+  window.location.href = API;
+}
+
+document.getElementById('nombre-display').textContent = nombre || 'Profesional';
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+  sessionStorage.clear();
+  localStorage.removeItem('prof_token');
+  window.location.href = API;
+});
+
+function toast(msg, tipo = 'exito') {
+  const el = document.getElementById('mensaje-global');
+  el.textContent = msg;
+  el.className = tipo;
+  setTimeout(() => { el.className = ''; }, 3500);
+}
+
+const tipoLabels = {
+  diagnostico: 'Diagnóstico',
+  medicacion:  'Medicación',
+  alergia:     'Alergia',
+  cirugia:     'Cirugía',
+  vacuna:      'Vacuna',
+  estudio:     'Estudio',
+  nota:        'Nota'
+};
+
+function formatFecha(val) {
+  if (!val) return null;
+  const [y, m, d] = val.split('-');
+  if (y && m && d) return `${d}/${m}/${y}`;
+  return val;
+}
+
+function renderArchivo(item) {
+  if (!item.archivo_path) return '';
+  const fileUrl = `${API}/archivo/${item.archivo_path}?token=${encodeURIComponent(jwtToken)}`;
+  const isImage = item.archivo_tipo && item.archivo_tipo.startsWith('image/');
+  const isVideo = item.archivo_tipo && item.archivo_tipo.startsWith('video/');
+
+  if (isImage) {
+    return `<div class="historial-archivo">
+      <a href="${fileUrl}" target="_blank" rel="noopener">
+        <img src="${fileUrl}" alt="${item.archivo_nombre}" class="historial-archivo-img" loading="lazy" />
+      </a>
+      <div class="historial-archivo-nombre">${item.archivo_nombre}</div>
+    </div>`;
+  }
+  if (isVideo) {
+    return `<div class="historial-archivo">
+      <video controls class="historial-archivo-video" preload="metadata">
+        <source src="${fileUrl}" type="${item.archivo_tipo}" />
+        Tu navegador no soporta la reproducción de video.
+      </video>
+      <div class="historial-archivo-nombre">${item.archivo_nombre}</div>
+    </div>`;
+  }
+  return `<div class="historial-archivo">
+    <a href="${fileUrl}" target="_blank" rel="noopener" class="historial-archivo-link" download="${item.archivo_nombre}">
+      📎 ${item.archivo_nombre}
+    </a>
+  </div>`;
+}
+
+function renderDato(label, valor) {
+  const vacio = !valor;
+  return `<div class="dato-item">
+    <span class="dato-label">${label}</span>
+    <span class="dato-valor${vacio ? ' vacio' : ''}">${valor || 'No registrado'}</span>
+  </div>`;
+}
+
+// ── Estado global ─────────────────────────────────────────────────────────────
+let pacienteActual  = null;
+let historialActual = [];
+
+function renderVista(paciente, historial) {
+  pacienteActual  = paciente;
+  historialActual = historial;
+
+  const iniciales = `${(paciente.firstName || '?')[0]}${(paciente.lastName || '?')[0]}`.toUpperCase();
+  const count = historial.length;
+
+  const historialHTML = count === 0
+    ? `<div class="historial-vacio">No hay registros médicos todavía.</div>`
+    : `<div class="historial-lista">
+        ${historial.map(item => `
+          <div class="historial-item">
+            <span class="tipo-badge tipo-${item.tipo}">${tipoLabels[item.tipo] || item.tipo}</span>
+            <div class="historial-item-body">
+              <div class="historial-item-titulo">${item.titulo || item.subtipo || item.tipo || '—'}</div>
+              ${item.descripcion ? `<div class="historial-item-desc">${item.descripcion}</div>` : ''}
+              ${renderArchivo(item)}
+              <div class="historial-item-meta">
+                ${item.fecha_registro ? `Fecha: ${item.fecha_registro} · ` : ''}
+                Registrado el ${new Date(item.created_at).toLocaleDateString('es-AR')}
+                ${(item.prof_nombre || item.prof_apellido) ? `· Por ${item.prof_nombre || ''} ${item.prof_apellido || ''}` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+
+  document.getElementById('contenido').innerHTML = `
+    <div class="datos-paciente">
+      <div class="datos-paciente-header">
+        <div class="paciente-avatar">${iniciales}</div>
+        <div>
+          <div class="paciente-nombre">${paciente.firstName} ${paciente.lastName}</div>
+          <div class="paciente-meta">${paciente.email}${paciente.phone ? ' · ' + paciente.phone : ''}</div>
+        </div>
+      </div>
+      <div class="datos-grid">
+        ${renderDato('DNI', paciente.dni)}
+        ${renderDato('Fecha de nacimiento', formatFecha(paciente.fecha_nacimiento))}
+        ${renderDato('Cobertura médica', paciente.cobertura_medica)}
+        ${renderDato('N.º de afiliado', paciente.numero_afiliado)}
+      </div>
+    </div>
+
+    <div class="historial-header">
+      <h2>Historial médico</h2>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="badge-count">${count} registro${count !== 1 ? 's' : ''}</span>
+        <button class="btn-nueva-atencion" onclick="abrirFormNuevaAtencion()">+ Nueva atención</button>
+      </div>
+    </div>
+    ${historialHTML}
+  `;
+}
+
+function mostrarError(titulo, detalle) {
+  document.getElementById('contenido').innerHTML = `
+    <div class="estado-error">
+      <h2>${titulo}</h2>
+      <p>${detalle}</p>
+    </div>
+  `;
+}
+
+async function cargarPaciente() {
+  const params  = new URLSearchParams(window.location.search);
+  const qrToken = params.get('token');
+
+  if (!qrToken) {
+    mostrarError('Token no encontrado', 'El enlace no contiene un código QR válido.');
+    return;
+  }
+
+  try {
+    const res  = await fetch(`${API}/qr/acceder/${qrToken}`, {
+      headers: { 'Authorization': `Bearer ${jwtToken}` }
+    });
+    const data = await res.json();
+
+    if (res.status === 410) {
+      mostrarError('QR expirado', 'El código QR venció. El paciente debe generar uno nuevo.');
+      return;
+    }
+    if (!res.ok) {
+      mostrarError('Acceso denegado', data.message || 'QR inválido o ya utilizado.');
+      return;
+    }
+
+    renderVista(data.paciente, data.historial);
+  } catch {
+    mostrarError('Error de conexión', 'No se pudo conectar con el servidor. Verificá tu conexión.');
+  }
+}
+
+// ── Perfil del profesional ────────────────────────────────────────────────────
+let perfilProfesional = {};
+
+async function cargarPerfilProfesional() {
+  try {
+    const res = await fetch(`${API}/perfil`, {
+      headers: { 'Authorization': `Bearer ${jwtToken}` }
+    });
+    if (res.ok) perfilProfesional = await res.json();
+  } catch (_) {}
+}
+
+// ── Nueva atención médica ─────────────────────────────────────────────────────
+const subtiposMap = {
+  consulta: ['Primera consulta', 'Consulta de seguimiento', 'Guardia', 'Teleconsulta', 'Otro'],
+  estudio:  ['Análisis de sangre', 'Radiografía', 'Ecografía', 'Tomografía', 'Resonancia', 'Electrocardiograma', 'Otro'],
+  practica: ['Vacuna', 'Curación', 'Inyectable', 'Nebulización', 'Cirugía menor', 'Otro']
+};
+
+const tipoDisplayMap = {
+  consulta: 'Consulta médica',
+  estudio:  'Estudio médico',
+  practica: 'Práctica médica'
+};
+
+let adjuntoBase64 = null;
+let adjuntoNombre = null;
+let adjuntoMime   = null;
+let fechaHoraISO  = null;
+
+function abrirFormNuevaAtencion() {
+  if (!pacienteActual) return;
+
+  const ahora = new Date();
+  fechaHoraISO = ahora.toISOString();
+  const fechaDisplay = ahora.toLocaleString('es-AR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  document.getElementById('ro-nombre').textContent    = nombre || '—';
+  document.getElementById('ro-matricula').textContent  = perfilProfesional.matricula  || 'No configurada';
+  document.getElementById('ro-institucion').textContent = perfilProfesional.institucion || 'No configurada';
+  document.getElementById('ro-fecha').textContent      = fechaDisplay;
+
+  // Reset campos del formulario
+  document.getElementById('at-tipo').value = '';
+  const subtipoSel = document.getElementById('at-subtipo');
+  subtipoSel.innerHTML = '<option value="">Primero seleccioná un tipo</option>';
+  subtipoSel.disabled  = true;
+  document.getElementById('at-descripcion').value = '';
+  document.getElementById('at-adjunto').value     = '';
+  document.getElementById('at-adjunto-preview').classList.add('hidden');
+  document.getElementById('at-adjunto-preview').innerHTML = '';
+  document.getElementById('at-adjunto-error').classList.add('hidden');
+  document.getElementById('error-paso-1').classList.add('hidden');
+  document.getElementById('error-paso-2').classList.add('hidden');
+  adjuntoBase64 = null;
+  adjuntoNombre = null;
+  adjuntoMime   = null;
+
+  // Mostrar paso 1
+  document.getElementById('form-paso-1').classList.remove('hidden');
+  document.getElementById('form-paso-2').classList.add('hidden');
+  document.getElementById('ind-paso-1').classList.add('activo');
+  document.getElementById('ind-paso-2').classList.remove('activo');
+
+  // Intercambiar vistas
+  document.getElementById('contenido').classList.add('hidden');
+  document.getElementById('panel-nueva-atencion').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function cerrarFormNuevaAtencion() {
+  document.getElementById('panel-nueva-atencion').classList.add('hidden');
+  document.getElementById('contenido').classList.remove('hidden');
+}
+
+document.getElementById('btn-volver-historial').addEventListener('click', cerrarFormNuevaAtencion);
+document.getElementById('btn-cancelar-atencion').addEventListener('click', cerrarFormNuevaAtencion);
+
+// Subtipo dinámico según tipo
+document.getElementById('at-tipo').addEventListener('change', () => {
+  const tipo    = document.getElementById('at-tipo').value;
+  const sel     = document.getElementById('at-subtipo');
+  if (!tipo) {
+    sel.innerHTML = '<option value="">Primero seleccioná un tipo</option>';
+    sel.disabled  = true;
+    return;
+  }
+  sel.innerHTML = `<option value="">Seleccioná un subtipo</option>` +
+    (subtiposMap[tipo] || []).map(s => `<option value="${s}">${s}</option>`).join('');
+  sel.disabled = false;
+});
+
+// Adjunto: validación 5 MB y conversión a base64
+document.getElementById('at-adjunto').addEventListener('change', async (e) => {
+  const file    = e.target.files[0];
+  const preview = document.getElementById('at-adjunto-preview');
+  const errEl   = document.getElementById('at-adjunto-error');
+
+  preview.classList.add('hidden');
+  preview.innerHTML = '';
+  errEl.classList.add('hidden');
+  adjuntoBase64 = null;
+  adjuntoNombre = null;
+  adjuntoMime   = null;
+
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+    errEl.textContent = 'El archivo supera el límite de 5 MB.';
+    errEl.classList.remove('hidden');
+    e.target.value = '';
+    return;
+  }
+
+  try {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = (ev) => resolve(ev.target.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    adjuntoBase64 = dataUrl.split(',')[1];
+    adjuntoNombre = file.name;
+    adjuntoMime   = file.type;
+
+    if (file.type.startsWith('image/')) {
+      preview.innerHTML = `<img src="${dataUrl}" alt="preview" class="archivo-preview-img" />`;
+    } else {
+      preview.innerHTML = `<span class="archivo-preview-nombre">📎 ${file.name}</span>`;
+    }
+    preview.classList.remove('hidden');
+  } catch {
+    errEl.textContent = 'No se pudo leer el archivo.';
+    errEl.classList.remove('hidden');
+    e.target.value = '';
+  }
+});
+
+// Paso 1 → Paso 2: validar y construir preview
+document.getElementById('btn-previsualizar').addEventListener('click', () => {
+  const tipo    = document.getElementById('at-tipo').value;
+  const subtipo = document.getElementById('at-subtipo').value;
+  const errorEl = document.getElementById('error-paso-1');
+
+  if (!tipo) {
+    errorEl.textContent = 'Seleccioná el tipo de práctica.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  if (!subtipo) {
+    errorEl.textContent = 'Seleccioná el subtipo.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  errorEl.classList.add('hidden');
+
+  const descripcion   = document.getElementById('at-descripcion').value.trim();
+  const fechaDisplay  = document.getElementById('ro-fecha').textContent;
+
+  let adjuntoHTML = `<span style="color:var(--gris-claro);font-size:0.85rem;font-style:italic">Sin adjunto</span>`;
+  if (adjuntoBase64) {
+    if (adjuntoMime && adjuntoMime.startsWith('image/')) {
+      adjuntoHTML = `<img src="data:${adjuntoMime};base64,${adjuntoBase64}" class="preview-adjunto-img" alt="${adjuntoNombre}" />`;
+    } else {
+      adjuntoHTML = `<div class="preview-adjunto-pdf">📎 ${adjuntoNombre}</div>`;
+    }
+  }
+
+  document.getElementById('preview-contenido').innerHTML = `
+    <div class="preview-card-titulo">Resumen de la atención</div>
+
+    <div class="preview-seccion">
+      <div class="preview-seccion-titulo">Profesional</div>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span class="preview-item-label">Nombre</span>
+          <span class="preview-item-value">${nombre || '—'}</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-item-label">Matrícula</span>
+          <span class="preview-item-value${!perfilProfesional.matricula ? ' vacio' : ''}">${perfilProfesional.matricula || 'No configurada'}</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-item-label">Institución</span>
+          <span class="preview-item-value${!perfilProfesional.institucion ? ' vacio' : ''}">${perfilProfesional.institucion || 'No configurada'}</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-item-label">Fecha y hora</span>
+          <span class="preview-item-value">${fechaDisplay}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-seccion">
+      <div class="preview-seccion-titulo">Atención</div>
+      <div class="preview-grid">
+        <div class="preview-item">
+          <span class="preview-item-label">Tipo</span>
+          <span class="preview-item-value">${tipoDisplayMap[tipo]}</span>
+        </div>
+        <div class="preview-item">
+          <span class="preview-item-label">Subtipo</span>
+          <span class="preview-item-value">${subtipo}</span>
+        </div>
+      </div>
+    </div>
+
+    ${descripcion ? `
+    <div class="preview-seccion">
+      <div class="preview-seccion-titulo">Descripción / notas</div>
+      <div class="preview-descripcion">${descripcion}</div>
+    </div>` : ''}
+
+    <div class="preview-seccion">
+      <div class="preview-seccion-titulo">Adjunto</div>
+      ${adjuntoHTML}
+    </div>
+  `;
+
+  document.getElementById('form-paso-1').classList.add('hidden');
+  document.getElementById('form-paso-2').classList.remove('hidden');
+  document.getElementById('ind-paso-1').classList.remove('activo');
+  document.getElementById('ind-paso-2').classList.add('activo');
+  document.getElementById('error-paso-2').classList.add('hidden');
+  window.scrollTo(0, 0);
+});
+
+// Paso 2 → Paso 1: volver a editar
+document.getElementById('btn-volver-editar').addEventListener('click', () => {
+  document.getElementById('form-paso-2').classList.add('hidden');
+  document.getElementById('form-paso-1').classList.remove('hidden');
+  document.getElementById('ind-paso-1').classList.add('activo');
+  document.getElementById('ind-paso-2').classList.remove('activo');
+  window.scrollTo(0, 0);
+});
+
+// Paso 2 → Confirmar y guardar
+document.getElementById('btn-confirmar').addEventListener('click', async () => {
+  const btn     = document.getElementById('btn-confirmar');
+  const errorEl = document.getElementById('error-paso-2');
+
+  btn.disabled    = true;
+  btn.textContent = 'Guardando…';
+  errorEl.classList.add('hidden');
+
+  const tipo        = document.getElementById('at-tipo').value;
+  const subtipo     = document.getElementById('at-subtipo').value;
+  const descripcion = document.getElementById('at-descripcion').value.trim();
+
+  const body = {
+    patient_id:              pacienteActual.id,
+    tipo:                    tipoDisplayMap[tipo],
+    subtipo:                 subtipo,
+    descripcion:             descripcion || null,
+    fecha:                   fechaHoraISO,
+    profesional_nombre:      nombre || '',
+    profesional_matricula:   perfilProfesional.matricula   || '',
+    profesional_institucion: perfilProfesional.institucion || '',
+    adjunto_base64:          adjuntoBase64 || null,
+    adjunto_nombre:          adjuntoNombre || null
+  };
+
+  try {
+    const res = await fetch(`${API}/historial/paciente/cargar`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (res.status === 201) {
+      toast('Atención guardada correctamente');
+      cerrarFormNuevaAtencion();
+
+      // Intentar refrescar el historial con el mismo QR token
+      const params  = new URLSearchParams(window.location.search);
+      const qrToken = params.get('token');
+      if (qrToken) {
+        try {
+          const r2 = await fetch(`${API}/qr/acceder/${qrToken}`, {
+            headers: { 'Authorization': `Bearer ${jwtToken}` }
+          });
+          if (r2.ok) {
+            const d2 = await r2.json();
+            renderVista(d2.paciente, d2.historial);
+          }
+        } catch (_) {}
+      }
+      return;
+    }
+
+    let errMsg = 'Error al guardar la atención. Intentá de nuevo.';
+    try {
+      const data = await res.json();
+      errMsg = data.message || errMsg;
+    } catch (_) {}
+    errorEl.textContent = errMsg;
+    errorEl.classList.remove('hidden');
+
+  } catch {
+    errorEl.textContent = 'Error de conexión. Revisá tu red e intentá de nuevo.';
+    errorEl.classList.remove('hidden');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Confirmar y guardar';
+  }
+});
+
+cargarPaciente();
+cargarPerfilProfesional();
+</script>
+</body>
+</html>

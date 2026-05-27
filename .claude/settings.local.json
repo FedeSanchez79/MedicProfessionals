@@ -58,7 +58,11 @@
       "Bash(curl -sk http://localhost:3001/)",
       "Bash(kill %1)",
       "Bash(npx kill-port *)",
-      "Bash(timeout 12 npx nodemon src/backend/app.js)"
+      "Bash(timeout 12 npx nodemon src/backend/app.js)",
+      "Bash(echo \"EXIT: $?\")",
+      "PowerShell(Get-Process *)",
+      "PowerShell(netstat *)",
+      "PowerShell(taskkill *)"
     ]
   }
 }
