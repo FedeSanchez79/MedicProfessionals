@@ -338,7 +338,7 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 
   try {
     const response = await fetch(
-      `${medicDataUrl}/api/qr/acceder/${req.params.token}`,
+      `${medicDataUrl}/qr/acceder/${req.params.token}`,
       { headers: { Authorization: req.headers['authorization'] } }
     );
     const data = await response.json();
