@@ -423,14 +423,16 @@
 <div id="mensaje-global"></div>
 
 <script>
-const API = 'https://localhost:3001';
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'https://localhost:3001'
+  : 'https://medicdata-production.up.railway.app';
 
 const jwtToken = sessionStorage.getItem('token');
 const role     = sessionStorage.getItem('role');
 const nombre   = sessionStorage.getItem('nombre');
 
 if (!jwtToken || role !== 'professional') {
-  window.location.href = API;
+  window.location.href = '/';
 }
 
 document.getElementById('nombre-display').textContent = nombre || 'Profesional';
@@ -438,7 +440,7 @@ document.getElementById('nombre-display').textContent = nombre || 'Profesional';
 document.getElementById('btn-logout').addEventListener('click', () => {
   sessionStorage.clear();
   localStorage.removeItem('prof_token');
-  window.location.href = API;
+  window.location.href = '/';
 });
 
 function toast(msg, tipo = 'exito') {
@@ -868,7 +870,7 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
   };
 
   try {
-    const res = await fetch(`http://localhost:3000/historial/paciente/cargar`, {
+    const res = await fetch(`${API}/historial/paciente/cargar`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
