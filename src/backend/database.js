@@ -31,10 +31,13 @@ export async function initDb() {
       last_name   TEXT    NOT NULL,
       email       TEXT    UNIQUE NOT NULL,
       phone       TEXT,
-      dni         TEXT,
-      matricula   TEXT,
-      institucion TEXT,
-      created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+      dni                TEXT,
+      matricula          TEXT,
+      institucion        TEXT,
+      fecha_nacimiento   DATE,
+      cobertura_medica   TEXT,
+      numero_afiliado    TEXT,
+      created_at         DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
@@ -50,6 +53,9 @@ export async function initDb() {
     'dni TEXT',
     'matricula TEXT',
     'institucion TEXT',
+    'fecha_nacimiento DATE',
+    'cobertura_medica TEXT',
+    'numero_afiliado TEXT',
     'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
   ]) {
     try { await db.exec(`ALTER TABLE users ADD COLUMN ${col}`); } catch (_) {}
