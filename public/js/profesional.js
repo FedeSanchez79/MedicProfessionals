@@ -309,6 +309,7 @@ async function cargarPerfil() {
     if (!res.ok) return;
     perfilData = await res.json();
     actualizarFotoUI(perfilData.foto_path);
+    actualizarSidebarPerfil(perfilData);
   } catch (_) {}
 }
 
@@ -317,9 +318,10 @@ function iniciales() {
 }
 
 function actualizarFotoUI(fotaPath) {
-  const navbarAvatar  = document.getElementById('navbar-avatar');
+  const navbarAvatar   = document.getElementById('navbar-avatar');
   const modalIniciales = document.getElementById('perfil-foto-iniciales');
   const modalImg       = document.getElementById('perfil-foto-img');
+  const sidebarFoto    = document.getElementById('sidebar-foto');
 
   if (fotaPath) {
     const url = `${API_BASE_URL}/archivo/${fotaPath}?token=${encodeURIComponent(token)}`;
@@ -327,13 +329,27 @@ function actualizarFotoUI(fotaPath) {
     modalIniciales.classList.add('hidden');
     modalImg.src = url;
     modalImg.classList.remove('hidden');
+    if (sidebarFoto) sidebarFoto.innerHTML = `<img src="${url}" alt="foto" />`;
   } else {
     const ini = iniciales();
     navbarAvatar.textContent = ini;
     modalIniciales.textContent = ini;
     modalIniciales.classList.remove('hidden');
     modalImg.classList.add('hidden');
+    if (sidebarFoto) sidebarFoto.textContent = ini;
   }
+}
+
+function actualizarSidebarPerfil(data) {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val || 'No configurada';
+    el.classList.toggle('vacio', !val);
+  };
+  set('sidebar-especialidad', data.especialidad);
+  set('sidebar-matricula',    data.matricula);
+  set('sidebar-institucion',  data.institucion);
 }
 
 function abrirModalPerfil() {
@@ -394,6 +410,7 @@ document.getElementById('form-perfil').addEventListener('submit', async (e) => {
     const data = await res.json();
     if (!res.ok) { toast(data.message || 'Error al guardar el perfil', 'error'); return; }
     perfilData = { ...perfilData, ...body };
+    actualizarSidebarPerfil(perfilData);
     cerrarModalPerfil();
     toast('Perfil guardado correctamente');
   } catch (_) {

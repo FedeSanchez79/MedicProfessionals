@@ -62,7 +62,10 @@
       "Bash(echo \"EXIT: $?\")",
       "PowerShell(Get-Process *)",
       "PowerShell(netstat *)",
-      "PowerShell(taskkill *)"
+      "PowerShell(taskkill *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\admin\\\\onedrive\\\\desktop\\\\medicprofessionales\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-List)"
     ]
   }
 }

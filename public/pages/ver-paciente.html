@@ -7,293 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/style.css">
-  <style>
-    .datos-paciente {
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .datos-paciente-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 1.25rem;
-    }
-    .datos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-    }
-    .dato-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .dato-label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--gris-claro);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .dato-valor {
-      font-size: 0.92rem;
-      color: var(--texto);
-      font-weight: 400;
-    }
-    .dato-valor.vacio {
-      color: var(--gris-claro);
-      font-style: italic;
-    }
-    .estado-cargando {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 16px;
-      color: var(--gris);
-      font-size: 0.9rem;
-    }
-    .estado-error {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: var(--error-bg);
-      border: 1px solid #FCA5A5;
-      border-radius: 16px;
-      color: var(--error);
-    }
-    .estado-error h2 {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-    .estado-error p {
-      font-size: 0.88rem;
-      opacity: 0.85;
-    }
-
-    /* ── Panel nueva atención ──────────────────────────────────────────────── */
-    .btn-nueva-atencion {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0.52rem 1rem;
-      background: var(--verde);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      font-family: "DM Sans", sans-serif;
-      cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
-    }
-    .btn-nueva-atencion:hover { background: #15803d; }
-
-    .panel-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .btn-volver {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: 1px solid var(--borde);
-      border-radius: 8px;
-      padding: 0.48rem 1rem;
-      font-size: 0.85rem;
-      color: var(--gris);
-      cursor: pointer;
-      font-family: "DM Sans", sans-serif;
-      transition: all 0.2s;
-    }
-    .btn-volver:hover { background: var(--fondo); color: var(--texto); }
-
-    .paso-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .paso-item {
-      font-size: 0.78rem;
-      font-weight: 500;
-      padding: 4px 12px;
-      border-radius: 20px;
-      color: var(--gris-claro);
-      background: var(--fondo);
-      border: 1px solid var(--borde);
-      transition: all 0.2s;
-    }
-    .paso-item.activo {
-      background: var(--verde-bg);
-      color: var(--verde);
-      border-color: #86EFAC;
-    }
-    .paso-separator {
-      color: var(--gris-claro);
-      font-size: 0.75rem;
-    }
-
-    .card-seccion {
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 16px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .card-seccion-titulo {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--gris-claro);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 1rem;
-    }
-
-    .campos-readonly {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-    }
-    .campo-readonly {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .campo-readonly .dato-valor {
-      font-size: 0.88rem;
-    }
-
-    .panel-footer {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      padding-top: 0.5rem;
-    }
-
-    .error-inline {
-      background: var(--error-bg);
-      color: var(--error);
-      border: 1px solid #FCA5A5;
-      border-radius: 10px;
-      padding: 0.65rem 1rem;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
-    .error-inline.hidden { display: none; }
-
-    .error-archivo {
-      font-size: 0.78rem;
-      color: var(--error);
-      margin-top: 4px;
-    }
-    .error-archivo.hidden { display: none; }
-
-    /* Paso 2: tarjeta preview */
-    .preview-card {
-      background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    .preview-card-titulo {
-      font-family: "DM Serif Display", serif;
-      font-size: 1.15rem;
-      color: var(--texto);
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--borde);
-    }
-    .preview-seccion {
-      margin-bottom: 1.25rem;
-    }
-    .preview-seccion:last-child { margin-bottom: 0; }
-    .preview-seccion-titulo {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--gris-claro);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.75rem;
-    }
-    .preview-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-    }
-    .preview-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .preview-item-label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--gris-claro);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-    .preview-item-value {
-      font-size: 0.88rem;
-      color: var(--texto);
-    }
-    .preview-item-value.vacio {
-      color: var(--gris-claro);
-      font-style: italic;
-    }
-    .preview-descripcion {
-      font-size: 0.88rem;
-      color: var(--texto);
-      line-height: 1.6;
-      padding: 0.75rem;
-      background: var(--fondo);
-      border-radius: 8px;
-      border: 1px solid var(--borde);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .preview-adjunto-img {
-      max-height: 180px;
-      width: 100%;
-      object-fit: contain;
-      border-radius: 8px;
-      border: 1px solid var(--borde);
-      display: block;
-    }
-    .preview-adjunto-pdf {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0.6rem 0.9rem;
-      background: var(--fondo);
-      border: 1px solid var(--borde);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      color: var(--gris);
-    }
-
-    @media (max-width: 480px) {
-      .datos-paciente { padding: 1rem; }
-      .datos-grid { grid-template-columns: 1fr 1fr; }
-      .panel-footer { flex-direction: column-reverse; }
-      .panel-footer .btn-cancelar,
-      .panel-footer .btn-guardar {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-      }
-      .card-seccion { padding: 1rem; }
-    }
-  </style>
 </head>
 <body class="page-profesional">
 
@@ -318,18 +31,34 @@
     <p>Datos obtenidos mediante código QR.</p>
   </div>
 
-  <div id="contenido">
+  <!-- Estado inicial (cargando / error) -->
+  <div id="estado-inicial">
     <div class="estado-cargando">Verificando acceso…</div>
   </div>
 
-  <!-- Panel: Nueva atención médica -->
+  <!-- Layout dos columnas (se muestra tras cargar datos) -->
+  <div id="layout-principal" class="layout-paciente hidden">
+
+    <!-- Columna izquierda: card del paciente -->
+    <aside class="sidebar-paciente" id="sidebar-paciente">
+      <!-- Populated by JS -->
+    </aside>
+
+    <!-- Columna derecha: historial + filtros -->
+    <div class="content-paciente" id="content-paciente">
+      <!-- Populated by JS -->
+    </div>
+
+  </div>
+
+  <!-- Panel: Nueva atención médica (pantalla completa, separada) -->
   <div id="panel-nueva-atencion" class="hidden">
 
     <div class="panel-nav">
       <button class="btn-volver" id="btn-volver-historial">← Volver al historial</button>
       <div class="paso-indicator">
         <span class="paso-item activo" id="ind-paso-1">1 · Datos</span>
-        <span class="paso-separator">→</span>
+        <span class="paso-separator" id="paso-sep"></span>
         <span class="paso-item" id="ind-paso-2">2 · Revisión</span>
       </div>
     </div>
@@ -385,7 +114,7 @@
         </div>
 
         <div class="campo campo-archivo">
-          <label for="at-adjunto">Adjunto <span style="color:var(--gris-claro);font-weight:400">(opcional)</span></label>
+          <label for="at-adjunto">Adjunto <span style="color:var(--text-secondary);font-weight:400">(opcional)</span></label>
           <input type="file" id="at-adjunto" accept="image/*,.pdf">
           <span class="archivo-hint">Imágenes o PDF · máximo 5 MB</span>
           <div id="at-adjunto-error" class="error-archivo hidden"></div>
@@ -405,7 +134,7 @@
     <div id="form-paso-2" class="hidden">
 
       <div id="preview-contenido" class="preview-card">
-        <!-- populado por JS -->
+        <!-- populated by JS -->
       </div>
 
       <div id="error-paso-2" class="error-inline hidden"></div>
@@ -509,72 +238,158 @@ function renderDato(label, valor) {
   </div>`;
 }
 
-// ── Estado global ─────────────────────────────────────────────────────────────
+/* ── Estado global ─────────────────────────────────────────────────────────── */
 let pacienteActual  = null;
 let historialActual = [];
 
+/* ── Render historial filtrado ─────────────────────────────────────────────── */
+function renderHistorialFiltrado(items) {
+  const container = document.getElementById('historial-lista-container');
+  const badge     = document.getElementById('badge-count');
+  if (!container) return;
+
+  if (badge) badge.textContent = `${historialActual.length} registro${historialActual.length !== 1 ? 's' : ''}`;
+
+  if (!items.length) {
+    container.innerHTML = `<div class="historial-vacio">Sin resultados para los filtros aplicados.</div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="historial-lista">
+    ${items.map(item => `
+      <div class="historial-item">
+        <span class="tipo-badge tipo-${item.tipo}">${tipoLabels[item.tipo] || item.tipo}</span>
+        <div class="historial-item-body">
+          <div class="historial-item-titulo">${item.titulo || item.subtipo || item.tipo || '—'}</div>
+          ${item.descripcion ? `<div class="historial-item-desc">${item.descripcion}</div>` : ''}
+          ${renderArchivo(item)}
+          <div class="historial-item-meta">
+            ${item.fecha_registro ? `Fecha: ${item.fecha_registro} · ` : ''}
+            Registrado el ${new Date(item.created_at).toLocaleDateString('es-AR')}
+            ${(item.prof_nombre || item.prof_apellido) ? `· Por ${item.prof_nombre || ''} ${item.prof_apellido || ''}` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+/* ── Aplicar filtros ───────────────────────────────────────────────────────── */
+function aplicarFiltros() {
+  const texto = (document.getElementById('filtro-texto')?.value || '').toLowerCase();
+  const tipo  = document.getElementById('filtro-tipo')?.value || '';
+  const desde = document.getElementById('filtro-desde')?.value || '';
+  const hasta = document.getElementById('filtro-hasta')?.value || '';
+
+  const filtrado = historialActual.filter(item => {
+    if (texto && !(
+      (item.titulo   || '').toLowerCase().includes(texto) ||
+      (item.descripcion || '').toLowerCase().includes(texto) ||
+      (item.tipo     || '').toLowerCase().includes(texto) ||
+      (item.subtipo  || '').toLowerCase().includes(texto)
+    )) return false;
+
+    if (tipo && item.tipo !== tipo) return false;
+
+    const fechaItem = item.fecha_registro || (item.created_at || '').slice(0, 10);
+    if (desde && fechaItem && fechaItem < desde) return false;
+    if (hasta && fechaItem && fechaItem > hasta) return false;
+
+    return true;
+  });
+
+  renderHistorialFiltrado(filtrado);
+}
+
+/* ── Render vista principal (sidebar + content) ────────────────────────────── */
 function renderVista(paciente, historial) {
   pacienteActual  = paciente;
   historialActual = historial;
 
   const iniciales = `${(paciente.first_name || '?')[0]}${(paciente.last_name || '?')[0]}`.toUpperCase();
-  const count = historial.length;
+  const count     = historial.length;
 
-  const historialHTML = count === 0
-    ? `<div class="historial-vacio">No hay registros médicos todavía.</div>`
-    : `<div class="historial-lista">
-        ${historial.map(item => `
-          <div class="historial-item">
-            <span class="tipo-badge tipo-${item.tipo}">${tipoLabels[item.tipo] || item.tipo}</span>
-            <div class="historial-item-body">
-              <div class="historial-item-titulo">${item.titulo || item.subtipo || item.tipo || '—'}</div>
-              ${item.descripcion ? `<div class="historial-item-desc">${item.descripcion}</div>` : ''}
-              ${renderArchivo(item)}
-              <div class="historial-item-meta">
-                ${item.fecha_registro ? `Fecha: ${item.fecha_registro} · ` : ''}
-                Registrado el ${new Date(item.created_at).toLocaleDateString('es-AR')}
-                ${(item.prof_nombre || item.prof_apellido) ? `· Por ${item.prof_nombre || ''} ${item.prof_apellido || ''}` : ''}
-              </div>
-            </div>
-          </div>
-        `).join('')}
-      </div>`;
-
-  document.getElementById('contenido').innerHTML = `
-    <div class="datos-paciente">
-      <div class="datos-paciente-header">
-        <div class="paciente-avatar">${iniciales}</div>
-        <div>
-          <div class="paciente-nombre">${paciente.first_name} ${paciente.last_name}</div>
-          <div class="paciente-meta">${paciente.email}${paciente.phone ? ' · ' + paciente.phone : ''}</div>
-        </div>
-      </div>
-      <div class="datos-grid">
+  /* Sidebar: card del paciente */
+  document.getElementById('sidebar-paciente').innerHTML = `
+    <div class="card-paciente-sidebar">
+      <div class="paciente-avatar-grande">${iniciales}</div>
+      <div class="paciente-nombre" style="font-size:1rem;margin-bottom:0.2rem">${paciente.first_name} ${paciente.last_name}</div>
+      <div class="paciente-meta">${paciente.email}${paciente.phone ? ' · ' + paciente.phone : ''}</div>
+      <div class="sidebar-datos-grid">
         ${renderDato('DNI', paciente.dni)}
-        ${renderDato('Fecha de nacimiento', formatFecha(paciente.fecha_nacimiento))}
+        ${renderDato('Nacimiento', formatFecha(paciente.fecha_nacimiento))}
         ${renderDato('Cobertura médica', paciente.cobertura_medica)}
         ${renderDato('N.º de afiliado', paciente.numero_afiliado)}
       </div>
     </div>
+  `;
 
+  /* Content: historial header + filtros + lista */
+  document.getElementById('content-paciente').innerHTML = `
     <div class="historial-header">
       <h2>Historial médico</h2>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <span class="badge-count">${count} registro${count !== 1 ? 's' : ''}</span>
+        <span class="badge-count" id="badge-count">${count} registro${count !== 1 ? 's' : ''}</span>
         <button class="btn-nueva-atencion" onclick="abrirFormNuevaAtencion()">+ Nueva atención</button>
       </div>
     </div>
-    ${historialHTML}
+
+    <div class="filtros-historial">
+      <div class="filtro-campo">
+        <input type="text" id="filtro-texto" placeholder="Buscar en historial…" />
+      </div>
+      <div class="filtro-campo">
+        <select id="filtro-tipo">
+          <option value="">Todos los tipos</option>
+          <option value="diagnostico">Diagnóstico</option>
+          <option value="medicacion">Medicación</option>
+          <option value="alergia">Alergia</option>
+          <option value="cirugia">Cirugía</option>
+          <option value="vacuna">Vacuna</option>
+          <option value="estudio">Estudio</option>
+          <option value="nota">Nota</option>
+        </select>
+      </div>
+      <div class="filtro-campo" style="min-width:130px;max-width:160px">
+        <input type="date" id="filtro-desde" title="Desde" />
+      </div>
+      <div class="filtro-campo" style="min-width:130px;max-width:160px">
+        <input type="date" id="filtro-hasta" title="Hasta" />
+      </div>
+      <button class="btn-limpiar-filtros" id="btn-limpiar-filtros">✕ Limpiar</button>
+    </div>
+
+    <div id="historial-lista-container"></div>
   `;
+
+  renderHistorialFiltrado(historial);
+
+  /* Wire up filter events */
+  document.getElementById('filtro-texto').addEventListener('input',  aplicarFiltros);
+  document.getElementById('filtro-tipo').addEventListener('change',  aplicarFiltros);
+  document.getElementById('filtro-desde').addEventListener('change', aplicarFiltros);
+  document.getElementById('filtro-hasta').addEventListener('change', aplicarFiltros);
+  document.getElementById('btn-limpiar-filtros').addEventListener('click', () => {
+    document.getElementById('filtro-texto').value  = '';
+    document.getElementById('filtro-tipo').value   = '';
+    document.getElementById('filtro-desde').value  = '';
+    document.getElementById('filtro-hasta').value  = '';
+    renderHistorialFiltrado(historialActual);
+  });
+
+  /* Show two-column layout */
+  document.getElementById('estado-inicial').classList.add('hidden');
+  document.getElementById('layout-principal').classList.remove('hidden');
 }
 
 function mostrarError(titulo, detalle) {
-  document.getElementById('contenido').innerHTML = `
+  document.getElementById('estado-inicial').innerHTML = `
     <div class="estado-error">
       <h2>${titulo}</h2>
       <p>${detalle}</p>
     </div>
   `;
+  document.getElementById('layout-principal').classList.add('hidden');
 }
 
 async function cargarPaciente() {
@@ -607,7 +422,7 @@ async function cargarPaciente() {
   }
 }
 
-// ── Perfil del profesional ────────────────────────────────────────────────────
+/* ── Perfil del profesional ────────────────────────────────────────────────── */
 let perfilProfesional = {};
 
 async function cargarPerfilProfesional() {
@@ -619,7 +434,7 @@ async function cargarPerfilProfesional() {
   } catch (_) {}
 }
 
-// ── Nueva atención médica ─────────────────────────────────────────────────────
+/* ── Nueva atención médica ─────────────────────────────────────────────────── */
 const subtiposMap = {
   consulta: ['Primera consulta', 'Consulta de seguimiento', 'Guardia', 'Teleconsulta', 'Otro'],
   estudio:  ['Análisis de sangre', 'Radiografía', 'Ecografía', 'Tomografía', 'Resonancia', 'Electrocardiograma', 'Otro'],
@@ -647,12 +462,11 @@ function abrirFormNuevaAtencion() {
     hour: '2-digit', minute: '2-digit'
   });
 
-  document.getElementById('ro-nombre').textContent    = nombre || '—';
-  document.getElementById('ro-matricula').textContent  = perfilProfesional.matricula  || 'No configurada';
+  document.getElementById('ro-nombre').textContent     = nombre || '—';
+  document.getElementById('ro-matricula').textContent  = perfilProfesional.matricula   || 'No configurada';
   document.getElementById('ro-institucion').textContent = perfilProfesional.institucion || 'No configurada';
   document.getElementById('ro-fecha').textContent      = fechaDisplay;
 
-  // Reset campos del formulario
   document.getElementById('at-tipo').value = '';
   const subtipoSel = document.getElementById('at-subtipo');
   subtipoSel.innerHTML = '<option value="">Primero seleccioná un tipo</option>';
@@ -668,30 +482,31 @@ function abrirFormNuevaAtencion() {
   adjuntoNombre = null;
   adjuntoMime   = null;
 
-  // Mostrar paso 1
+  /* Show step 1 */
   document.getElementById('form-paso-1').classList.remove('hidden');
   document.getElementById('form-paso-2').classList.add('hidden');
   document.getElementById('ind-paso-1').classList.add('activo');
   document.getElementById('ind-paso-2').classList.remove('activo');
+  document.getElementById('paso-sep').classList.remove('completado');
 
-  // Intercambiar vistas
-  document.getElementById('contenido').classList.add('hidden');
+  /* Swap views */
+  document.getElementById('layout-principal').classList.add('hidden');
   document.getElementById('panel-nueva-atencion').classList.remove('hidden');
   window.scrollTo(0, 0);
 }
 
 function cerrarFormNuevaAtencion() {
   document.getElementById('panel-nueva-atencion').classList.add('hidden');
-  document.getElementById('contenido').classList.remove('hidden');
+  document.getElementById('layout-principal').classList.remove('hidden');
 }
 
 document.getElementById('btn-volver-historial').addEventListener('click', cerrarFormNuevaAtencion);
 document.getElementById('btn-cancelar-atencion').addEventListener('click', cerrarFormNuevaAtencion);
 
-// Subtipo dinámico según tipo
+/* Subtipo dinámico */
 document.getElementById('at-tipo').addEventListener('change', () => {
-  const tipo    = document.getElementById('at-tipo').value;
-  const sel     = document.getElementById('at-subtipo');
+  const tipo = document.getElementById('at-tipo').value;
+  const sel  = document.getElementById('at-subtipo');
   if (!tipo) {
     sel.innerHTML = '<option value="">Primero seleccioná un tipo</option>';
     sel.disabled  = true;
@@ -702,7 +517,7 @@ document.getElementById('at-tipo').addEventListener('change', () => {
   sel.disabled = false;
 });
 
-// Adjunto: validación 5 MB y conversión a base64
+/* Adjunto: validación 5 MB y previsualización */
 document.getElementById('at-adjunto').addEventListener('change', async (e) => {
   const file    = e.target.files[0];
   const preview = document.getElementById('at-adjunto-preview');
@@ -749,7 +564,7 @@ document.getElementById('at-adjunto').addEventListener('change', async (e) => {
   }
 });
 
-// Paso 1 → Paso 2: validar y construir preview
+/* Paso 1 → Paso 2: validar y construir preview */
 document.getElementById('btn-previsualizar').addEventListener('click', () => {
   const tipo    = document.getElementById('at-tipo').value;
   const subtipo = document.getElementById('at-subtipo').value;
@@ -767,10 +582,10 @@ document.getElementById('btn-previsualizar').addEventListener('click', () => {
   }
   errorEl.classList.add('hidden');
 
-  const descripcion   = document.getElementById('at-descripcion').value.trim();
-  const fechaDisplay  = document.getElementById('ro-fecha').textContent;
+  const descripcion  = document.getElementById('at-descripcion').value.trim();
+  const fechaDisplay = document.getElementById('ro-fecha').textContent;
 
-  let adjuntoHTML = `<span style="color:var(--gris-claro);font-size:0.85rem;font-style:italic">Sin adjunto</span>`;
+  let adjuntoHTML = `<span style="color:var(--text-secondary);font-size:0.85rem;font-style:italic">Sin adjunto</span>`;
   if (adjuntoBase64) {
     if (adjuntoMime && adjuntoMime.startsWith('image/')) {
       adjuntoHTML = `<img src="data:${adjuntoMime};base64,${adjuntoBase64}" class="preview-adjunto-img" alt="${adjuntoNombre}" />`;
@@ -834,20 +649,22 @@ document.getElementById('btn-previsualizar').addEventListener('click', () => {
   document.getElementById('form-paso-2').classList.remove('hidden');
   document.getElementById('ind-paso-1').classList.remove('activo');
   document.getElementById('ind-paso-2').classList.add('activo');
+  document.getElementById('paso-sep').classList.add('completado');
   document.getElementById('error-paso-2').classList.add('hidden');
   window.scrollTo(0, 0);
 });
 
-// Paso 2 → Paso 1: volver a editar
+/* Paso 2 → Paso 1 */
 document.getElementById('btn-volver-editar').addEventListener('click', () => {
   document.getElementById('form-paso-2').classList.add('hidden');
   document.getElementById('form-paso-1').classList.remove('hidden');
   document.getElementById('ind-paso-1').classList.add('activo');
   document.getElementById('ind-paso-2').classList.remove('activo');
+  document.getElementById('paso-sep').classList.remove('completado');
   window.scrollTo(0, 0);
 });
 
-// Paso 2 → Confirmar y guardar
+/* Confirmar y guardar */
 document.getElementById('btn-confirmar').addEventListener('click', async () => {
   const btn     = document.getElementById('btn-confirmar');
   const errorEl = document.getElementById('error-paso-2');
