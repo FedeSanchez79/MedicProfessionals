@@ -52,9 +52,9 @@ export function authenticateToken(req, res, next) {
 // ─── Rutas públicas ───────────────────────────────────────────────────────────
 
 app.post('/register', async (req, res) => {
-  const { firstName, lastName, phone, email, username, password, role } = req.body;
+  const { first_name, last_name, phone, email, username, password, role } = req.body;
 
-  if (!firstName || !lastName || !email || !username || !password || !role) {
+  if (!first_name || !last_name || !email || !username || !password || !role) {
     return res.status(400).json({ message: 'Faltan datos obligatorios' });
   }
 
@@ -67,9 +67,9 @@ app.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await db.run(
-      `INSERT INTO users (firstName, lastName, phone, email, username, password, role)
+      `INSERT INTO users (first_name, last_name, phone, email, username, password, role)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [firstName, lastName, phone, email, username, hashedPassword, role]
+      [first_name, last_name, phone, email, username, hashedPassword, role]
     );
 
     res.status(201).json({ message: 'Cuenta de profesional registrada correctamente' });
@@ -112,8 +112,8 @@ app.post('/login', async (req, res) => {
         id: user.id,
         role: user.role,
         username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName
+        first_name: user.first_name,
+        last_name: user.last_name
       },
       JWT_SECRET,
       { expiresIn: '8h' }
@@ -123,8 +123,8 @@ app.post('/login', async (req, res) => {
       token,
       id: user.id,
       username: user.username,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      first_name: user.first_name,
+      last_name: user.last_name,
       role: user.role
     });
   } catch (error) {
@@ -335,7 +335,7 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 
     // MedicData guarda el token en users.qr_token (no en la tabla qr_tokens)
     const paciente = await db.get(
-      `SELECT id, firstName, lastName, email, phone,
+      `SELECT id, first_name, last_name, email, phone,
               dni, fecha_nacimiento, cobertura_medica, numero_afiliado,
               qr_token_expires
        FROM users WHERE qr_token = ? AND role = 'patient'`,
@@ -362,8 +362,8 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
 
     const historial = await db.all(
       `SELECT mr.*,
-              COALESCE(u.firstName, '') as prof_nombre,
-              COALESCE(u.lastName,  '') as prof_apellido
+              COALESCE(u.first_name, '') as prof_nombre,
+              COALESCE(u.last_name,  '') as prof_apellido
        FROM medical_records mr
        LEFT JOIN users u ON u.id = mr.professional_id
        WHERE mr.patient_id = ? AND mr.activo = 1

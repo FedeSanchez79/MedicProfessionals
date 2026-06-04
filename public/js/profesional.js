@@ -74,7 +74,7 @@ async function accederPorQR(qrToken) {
       return;
     }
 
-    console.log('[QR] Acceso exitoso, paciente:', data.paciente?.firstName, data.paciente?.lastName);
+    console.log('[QR] Acceso exitoso, paciente:', data.paciente?.first_name, data.paciente?.last_name);
     cargarVistaPaciente(data.paciente, data.historial);
 
   } catch (err) {
@@ -90,9 +90,9 @@ async function accederPorQR(qrToken) {
 function cargarVistaPaciente(paciente, historial) {
   pacienteActual = paciente;
 
-  const iniciales = `${paciente.firstName[0]}${paciente.lastName[0]}`.toUpperCase();
+  const iniciales = `${paciente.first_name[0]}${paciente.last_name[0]}`.toUpperCase();
   document.getElementById('paciente-avatar').textContent = iniciales;
-  document.getElementById('paciente-nombre').textContent = `${paciente.firstName} ${paciente.lastName}`;
+  document.getElementById('paciente-nombre').textContent = `${paciente.first_name} ${paciente.last_name}`;
   document.getElementById('paciente-meta').textContent   = `${paciente.email} · ${paciente.phone || 'Sin teléfono'}`;
 
   document.getElementById('estado-vacio').classList.add('hidden');

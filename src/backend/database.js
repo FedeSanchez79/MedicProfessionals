@@ -23,17 +23,37 @@ export async function initDb() {
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id            INTEGER PRIMARY KEY AUTOINCREMENT,
-      firstName     TEXT    NOT NULL,
-      lastName      TEXT    NOT NULL,
-      phone         TEXT,
-      email         TEXT    UNIQUE NOT NULL,
-      username      TEXT    UNIQUE NOT NULL,
-      password      TEXT    NOT NULL,
-      role          TEXT    NOT NULL CHECK(role IN ('patient', 'professional')),
-      created_at    DATETIME DEFAULT CURRENT_TIMESTAMP
+      id          INTEGER PRIMARY KEY AUTOINCREMENT,
+      username    TEXT    UNIQUE NOT NULL,
+      password    TEXT    NOT NULL,
+      role        TEXT    NOT NULL CHECK(role IN ('patient', 'professional')),
+      first_name  TEXT    NOT NULL,
+      last_name   TEXT    NOT NULL,
+      email       TEXT    UNIQUE NOT NULL,
+      phone       TEXT,
+      dni         TEXT,
+      matricula   TEXT,
+      institucion TEXT,
+      created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  // Migración: agregar columnas faltantes en DBs existentes
+  for (const col of [
+    'username TEXT',
+    'password TEXT',
+    'role TEXT',
+    'first_name TEXT',
+    'last_name TEXT',
+    'email TEXT',
+    'phone TEXT',
+    'dni TEXT',
+    'matricula TEXT',
+    'institucion TEXT',
+    'created_at DATETIME DEFAULT CURRENT_TIMESTAMP',
+  ]) {
+    try { await db.exec(`ALTER TABLE users ADD COLUMN ${col}`); } catch (_) {}
+  }
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS professional_profiles (

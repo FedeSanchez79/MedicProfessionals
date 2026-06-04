@@ -165,7 +165,7 @@ registerForm?.addEventListener('submit', async (e) => {
     const res = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, phone, email, username, password, role: 'professional' })
+      body: JSON.stringify({ first_name: firstName, last_name: lastName, phone, email, username, password, role: 'professional' })
     });
     const data = await res.json();
 
@@ -219,7 +219,7 @@ loginForm?.addEventListener('submit', async (e) => {
     sessionStorage.setItem('userId',   payload.id);
     sessionStorage.setItem('role',     payload.role);
     sessionStorage.setItem('username', payload.username);
-    sessionStorage.setItem('nombre',   `${payload.firstName} ${payload.lastName}`);
+    sessionStorage.setItem('nombre',   `${payload.first_name} ${payload.last_name}`);
     localStorage.setItem('prof_token', data.token);
 
     window.location.href = '/pages/profesional.html';

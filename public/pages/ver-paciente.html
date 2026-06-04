@@ -517,7 +517,7 @@ function renderVista(paciente, historial) {
   pacienteActual  = paciente;
   historialActual = historial;
 
-  const iniciales = `${(paciente.firstName || '?')[0]}${(paciente.lastName || '?')[0]}`.toUpperCase();
+  const iniciales = `${(paciente.first_name || '?')[0]}${(paciente.last_name || '?')[0]}`.toUpperCase();
   const count = historial.length;
 
   const historialHTML = count === 0
@@ -545,7 +545,7 @@ function renderVista(paciente, historial) {
       <div class="datos-paciente-header">
         <div class="paciente-avatar">${iniciales}</div>
         <div>
-          <div class="paciente-nombre">${paciente.firstName} ${paciente.lastName}</div>
+          <div class="paciente-nombre">${paciente.first_name} ${paciente.last_name}</div>
           <div class="paciente-meta">${paciente.email}${paciente.phone ? ' · ' + paciente.phone : ''}</div>
         </div>
       </div>

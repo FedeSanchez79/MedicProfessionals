@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
     const db = await openDb();
 
     const paciente = await db.get(
-      `SELECT id, firstName, lastName, email, phone FROM users WHERE id = ? AND role = 'patient'`,
+      `SELECT id, first_name, last_name, email, phone FROM users WHERE id = ? AND role = 'patient'`,
       req.params.id
     );
 
@@ -25,7 +25,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const historial = await db.all(
-      `SELECT mr.*, u.firstName as prof_nombre, u.lastName as prof_apellido
+      `SELECT mr.*, u.first_name as prof_nombre, u.last_name as prof_apellido
        FROM medical_records mr
        JOIN users u ON u.id = mr.professional_id
        WHERE mr.patient_id = ?
@@ -110,7 +110,7 @@ router.post('/:id/registro', (req, res, next) => {
     );
 
     const historial = await db.all(
-      `SELECT mr.*, u.firstName as prof_nombre, u.lastName as prof_apellido
+      `SELECT mr.*, u.first_name as prof_nombre, u.last_name as prof_apellido
        FROM medical_records mr
        JOIN users u ON u.id = mr.professional_id
        WHERE mr.patient_id = ?
