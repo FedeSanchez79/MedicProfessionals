@@ -423,7 +423,11 @@
 <div id="mensaje-global"></div>
 
 <script>
-const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+const API = window.location.hostname === 'localhost'
+  ? 'https://localhost:3001'
+  : 'https://medicprofessionals-production.up.railway.app';
+
+const MEDICDATA_API = window.location.hostname === 'localhost'
   ? 'https://localhost:3001'
   : 'https://medicdata-production.up.railway.app';
 
@@ -870,7 +874,7 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
   };
 
   try {
-    const res = await fetch(`${API}/historial/paciente/cargar`, {
+    const res = await fetch(`${MEDICDATA_API}/historial/paciente/cargar`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${jwtToken}`,
