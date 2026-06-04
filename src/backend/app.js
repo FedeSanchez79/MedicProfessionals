@@ -330,50 +330,21 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
     return res.status(403).json({ message: 'Solo profesionales pueden escanear QR' });
   }
 
+  const medicDataUrl = process.env.MEDICDATA_URL;
+  if (!medicDataUrl) {
+    console.error('[QR BACKEND] MEDICDATA_URL no está configurado');
+    return res.status(500).json({ message: 'Error de configuración del servidor' });
+  }
+
   try {
-    const db = await openDb();
-
-    // MedicData guarda el token en users.qr_token (no en la tabla qr_tokens)
-    const paciente = await db.get(
-      `SELECT id, first_name, last_name, email, phone,
-              dni, fecha_nacimiento, cobertura_medica, numero_afiliado,
-              qr_token_expires
-       FROM users WHERE qr_token = ? AND role = 'patient'`,
-      req.params.token
+    const response = await fetch(
+      `${medicDataUrl}/api/qr/acceder/${req.params.token}`,
+      { headers: { Authorization: req.headers['authorization'] } }
     );
-    if (!paciente) {
-      return res.status(404).json({ message: 'QR inválido o ya utilizado' });
-    }
-
-    if (new Date() > new Date(paciente.qr_token_expires)) {
-      await db.run(`UPDATE users SET qr_token = NULL, qr_token_expires = NULL WHERE id = ?`, paciente.id);
-      return res.status(410).json({ message: 'El QR expiró. El paciente debe generar uno nuevo.' });
-    }
-
-    // Invalidar el token para uso único
-    await db.run(`UPDATE users SET qr_token = NULL, qr_token_expires = NULL WHERE id = ?`, paciente.id);
-
-    try {
-      await db.run(
-        `INSERT INTO access_log (patient_id, accessed_by, metodo) VALUES (?, ?, 'qr')`,
-        [paciente.id, req.user.id]
-      );
-    } catch (_) {}
-
-    const historial = await db.all(
-      `SELECT mr.*,
-              COALESCE(u.first_name, '') as prof_nombre,
-              COALESCE(u.last_name,  '') as prof_apellido
-       FROM medical_records mr
-       LEFT JOIN users u ON u.id = mr.professional_id
-       WHERE mr.patient_id = ? AND mr.activo = 1
-       ORDER BY mr.created_at DESC`,
-      paciente.id
-    );
-    const { qr_token_expires, ...pacienteSinMeta } = paciente;
-    res.json({ paciente: pacienteSinMeta, historial });
+    const data = await response.json();
+    res.status(response.status).json(data);
   } catch (error) {
-    console.error('[QR BACKEND] Error accediendo por QR:', error);
+    console.error('[QR BACKEND] Error consultando MedicData:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
