@@ -78,7 +78,10 @@ async function accederPorQR(qrToken) {
     cargarVistaPaciente(data.paciente, data.historial);
 
   } catch (err) {
-    console.error('[QR] Error de red:', err);
+    console.error('[QR] Error de red — nombre:', err.name);
+    console.error('[QR] Error de red — mensaje:', err.message);
+    console.error('[QR] Error de red — stack:', err.stack);
+    console.error('[QR] Error de red — objeto completo:', err);
     toast('Error al acceder con el QR', 'error');
   }
 }
@@ -227,6 +230,13 @@ function abrirEscaner() {
       if (!qrEscaneando) return;
       qrEscaneando = false;
       await cerrarEscaner();
+
+      if (decodedText.includes('ver-paciente.html?token=')) {
+        console.log('[QR SCAN] URL de paciente detectada, redirigiendo a:', decodedText);
+        window.location.href = decodedText;
+        return;
+      }
+
       const qrToken = extractTokenFromQR(decodedText);
       console.log('[QR SCAN] Token final a enviar al servidor:', qrToken);
       if (!qrToken) {
