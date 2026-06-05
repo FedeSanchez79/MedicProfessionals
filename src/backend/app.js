@@ -49,6 +49,14 @@ export function authenticateToken(req, res, next) {
   });
 }
 
+function requireAdminToken(req, res, next) {
+  const token = req.headers['x-admin-token'];
+  if (!token || token !== process.env.ADMIN_API_SECRET) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+  next();
+}
+
 // ─── Rutas públicas ───────────────────────────────────────────────────────────
 
 app.post('/register', async (req, res) => {
@@ -347,6 +355,56 @@ app.get('/qr/acceder/:token', authenticateToken, async (req, res) => {
     console.error('[QR BACKEND] Error consultando MedicData:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
+});
+
+// ─── Rutas admin ─────────────────────────────────────────────────────────────
+
+app.get('/api/admin/users', requireAdminToken, async (req, res) => {
+  try {
+    const db = await openDb();
+    const users = await db.all(`
+      SELECT u.id, u.first_name, u.last_name, u.phone, u.email, u.username, u.role, u.created_at,
+             u.matricula, u.institucion
+      FROM users u
+      ORDER BY u.created_at DESC
+    `);
+    res.json(users);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/admin/users/:id', requireAdminToken, async (req, res) => {
+  try {
+    const db = await openDb();
+    const user = await db.get(`
+      SELECT u.id, u.first_name, u.last_name, u.phone, u.email, u.username, u.role, u.created_at,
+             u.matricula, u.institucion
+      FROM users u WHERE u.id = ?
+    `, req.params.id);
+    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json(user);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.put('/api/admin/users/:id', requireAdminToken, async (req, res) => {
+  try {
+    const { first_name, last_name, email, phone, username, matricula, institucion } = req.body;
+    const db = await openDb();
+    const result = await db.run(
+      'UPDATE users SET first_name=?, last_name=?, email=?, phone=?, username=?, matricula=?, institucion=? WHERE id=?',
+      [first_name, last_name, email, phone ?? null, username, matricula ?? null, institucion ?? null, req.params.id]
+    );
+    if (result.changes === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/api/admin/users/:id', requireAdminToken, async (req, res) => {
+  try {
+    const db = await openDb();
+    const result = await db.run('DELETE FROM users WHERE id=?', req.params.id);
+    if (result.changes === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    res.json({ ok: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 // ─── Inicializar DB y arrancar servidor ───────────────────────────────────────
