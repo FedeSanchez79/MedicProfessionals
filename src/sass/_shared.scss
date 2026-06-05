@@ -2,8 +2,9 @@
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 .navbar {
-  background: var(--blanco);
-  border-bottom: 1px solid var(--borde);
+  background: #162234;
+  border-bottom: 1px solid rgba(0, 200, 150, 0.3);
+  box-shadow: 0 2px 20px rgba(0, 200, 150, 0.06);
   padding: 0 2rem;
   height: 60px;
   display: flex;
@@ -20,15 +21,19 @@
   gap: 10px;
   font-family: 'DM Serif Display', serif;
   font-size: 1.2rem;
-  color: var(--texto);
+  color: var(--text-primary);
   text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: var(--accent-green); }
 }
 
 .navbar-brand-dot {
   width: 10px;
   height: 10px;
-  background: var(--azul);
+  background: var(--accent-green);
   border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 200, 150, 0.6);
 }
 
 .navbar-right {
@@ -61,7 +66,7 @@
   &:hover {
     background: var(--error-bg);
     color: var(--error);
-    border-color: #FCA5A5;
+    border-color: rgba(248, 113, 113, 0.4);
   }
 }
 
@@ -76,7 +81,7 @@
 label {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--texto);
+  color: var(--text-secondary);
   letter-spacing: 0.01em;
 }
 
@@ -84,17 +89,30 @@ input,
 select,
 textarea {
   padding: 0.65rem 0.9rem;
-  border: 1.5px solid var(--borde);
+  border: 1.5px solid rgba(0, 200, 150, 0.25);
   border-radius: 10px;
   font-size: 0.9rem;
   font-family: 'DM Sans', sans-serif;
-  color: var(--texto);
-  background: var(--blanco);
-  transition: border-color 0.2s;
+  color: var(--text-primary);
+  background: var(--bg-surface-2);
+  transition: all 0.3s ease;
   outline: none;
   width: 100%;
 
-  &:focus { border-color: var(--azul); }
+  &::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.2);
+  }
+}
+
+select option {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
 }
 
 textarea {
@@ -166,13 +184,13 @@ textarea {
   margin-top: 2px;
 }
 
-.tipo-diagnostico { background: #EEF3FF; color: #1A5CFF; }
-.tipo-medicacion  { background: #F0FDF4; color: #16A34A; }
-.tipo-alergia     { background: #FEF2F2; color: #DC2626; }
-.tipo-cirugia     { background: #FFF7ED; color: #C2410C; }
-.tipo-vacuna      { background: #F5F3FF; color: #7C3AED; }
-.tipo-estudio     { background: #ECFEFF; color: #0E7490; }
-.tipo-nota        { background: #F9FAFB; color: #6B7280; }
+.tipo-diagnostico { background: rgba(30, 144, 255, 0.15);  color: #60a5fa; }
+.tipo-medicacion  { background: rgba(0, 200, 150, 0.12);   color: #00c896; }
+.tipo-alergia     { background: rgba(248, 113, 113, 0.12); color: #f87171; }
+.tipo-cirugia     { background: rgba(251, 146, 60, 0.12);  color: #fb923c; }
+.tipo-vacuna      { background: rgba(167, 139, 250, 0.12); color: #a78bfa; }
+.tipo-estudio     { background: rgba(34, 211, 238, 0.12);  color: #22d3ee; }
+.tipo-nota        { background: rgba(148, 163, 184, 0.1);  color: #94a3b8; }
 
 .historial-item-body { flex: 1; }
 
@@ -205,11 +223,26 @@ textarea {
   font-weight: 500;
   display: none;
   z-index: 999;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 
-  &.exito   { background: var(--exito-bg);   color: var(--exito);   display: block; }
-  &.error   { background: var(--error-bg);   color: var(--error);   display: block; }
-  &.warning { background: var(--warning-bg); color: var(--warning); display: block; }
+  &.exito   {
+    background: var(--exito-bg);
+    color: var(--exito);
+    border: 1px solid rgba(0, 200, 150, 0.3);
+    display: block;
+  }
+  &.error   {
+    background: var(--error-bg);
+    color: var(--error);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    display: block;
+  }
+  &.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    display: block;
+  }
 }
 
 // ── Loading ───────────────────────────────────────────────────────────────────

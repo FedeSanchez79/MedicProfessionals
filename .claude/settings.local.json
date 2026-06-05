@@ -67,7 +67,12 @@
       "Bash(Select-Object FullName)",
       "Bash(Format-List)",
       "Bash(node --input-type=module --eval \"import './src/backend/database.js'\")",
-      "Bash(node --input-type=module --eval \"import passport from 'passport'; import { Strategy as G } from 'passport-google-oauth20'; import session from 'express-session'; console.log\\('OK'\\)\")"
+      "Bash(node --input-type=module --eval \"import passport from 'passport'; import { Strategy as G } from 'passport-google-oauth20'; import session from 'express-session'; console.log\\('OK'\\)\")",
+      "Bash(findstr /i \"sass\\\\|script\")",
+      "Bash(sed -n '359,395p' public/css/style.css)",
+      "Bash(sed -n '470,492p' public/css/style.css)",
+      "Bash(sed -n '569,600p' public/css/style.css)",
+      "Bash(sed -n '639,690p' public/css/style.css)"
     ]
   }
 }

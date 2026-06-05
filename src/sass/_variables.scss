@@ -5,29 +5,40 @@
 }
 
 :root {
-  --azul:       #1A5CFF;
-  --azul-suave: #EEF3FF;
-  --azul-hover: #1449CC;
-  --verde:      #16A34A;
-  --verde-bg:   #F0FDF4;
-  --texto:      #111827;
-  --gris:       #6B7280;
-  --gris-claro: #9CA3AF;
-  --borde:      #E5E7EB;
-  --fondo:      #F9FAFB;
-  --blanco:     #FFFFFF;
-  --error:      #DC2626;
-  --error-bg:   #FEF2F2;
-  --exito:      #16A34A;
-  --exito-bg:   #F0FDF4;
-  --warning:    #D97706;
-  --warning-bg: #FFFBEB;
+  // Dark theme core
+  --bg-primary:     #0d1b2a;
+  --bg-surface:     #1b2838;
+  --bg-surface-2:   #243447;
+  --accent-green:   #00c896;
+  --accent-blue:    #1e90ff;
+  --text-primary:   #e0f0ff;
+  --text-secondary: #7a9bb5;
+  --border:         rgba(0, 200, 150, 0.2);
+
+  // Legacy aliases (usados por los archivos SCSS compartidos)
+  --azul:       #1e90ff;
+  --azul-suave: rgba(30, 144, 255, 0.15);
+  --azul-hover: #1449cc;
+  --verde:      #00c896;
+  --verde-bg:   rgba(0, 200, 150, 0.12);
+  --texto:      #e0f0ff;
+  --gris:       #7a9bb5;
+  --gris-claro: #4a6a85;
+  --borde:      rgba(0, 200, 150, 0.2);
+  --fondo:      #243447;
+  --blanco:     #1b2838;
+  --error:      #f87171;
+  --error-bg:   rgba(248, 113, 113, 0.12);
+  --exito:      #00c896;
+  --exito-bg:   rgba(0, 200, 150, 0.12);
+  --warning:    #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background: var(--fondo);
-  color: var(--texto);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   min-height: 100vh;
 }
 
