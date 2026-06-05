@@ -13,6 +13,9 @@ import pacienteRouter from './routes/paciente.js';
 import { UPLOADS_DIR } from './upload.js';
 import { upload } from './upload.js';
 import fs from 'fs';
+import session from 'express-session';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
 dotenv.config();
 
@@ -22,6 +25,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret_key';
+
+app.set('trust proxy', 1);
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -36,6 +41,59 @@ const passwordResetRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};:'",.
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../../public')));
+
+app.use(session({
+  secret: process.env.SESSION_SECRET || JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 5 * 60 * 1000,
+  },
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+passport.use(new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: `${process.env.PUBLIC_URL}/auth/google/callback`,
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const db = await openDb();
+      const email = profile.emails?.[0]?.value;
+
+      let user = await db.get('SELECT * FROM users WHERE google_id = ?', profile.id);
+
+      if (!user && email) {
+        user = await db.get('SELECT * FROM users WHERE email = ?', email);
+        if (user) {
+          await db.run('UPDATE users SET google_id = ? WHERE id = ?', [profile.id, user.id]);
+          user.google_id = profile.id;
+        }
+      }
+
+      if (!user) {
+        const result = await db.run(
+          `INSERT INTO users (google_id, first_name, last_name, email, role)
+           VALUES (?, ?, ?, ?, 'professional')`,
+          [profile.id, profile.name?.givenName || '', profile.name?.familyName || '', email]
+        );
+        user = await db.get('SELECT * FROM users WHERE id = ?', result.lastID);
+      }
+
+      done(null, user);
+    } catch (err) {
+      done(err);
+    }
+  }
+));
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -108,6 +166,10 @@ app.post('/login', async (req, res) => {
 
     if (user.role !== 'professional') {
       return res.status(403).json({ message: 'Esta plataforma es solo para profesionales de salud' });
+    }
+
+    if (!user.password) {
+      return res.status(401).json({ message: 'Esta cuenta usa Google para iniciar sesión. Usá el botón "Continuar con Google".' });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
@@ -236,6 +298,30 @@ app.post('/reset-password', async (req, res) => {
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
+
+// ─── Google OAuth ─────────────────────────────────────────────────────────────
+
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/?error=oauth' }),
+  (req, res) => {
+    const user = req.user;
+    const token = jwt.sign(
+      {
+        id: user.id,
+        role: user.role,
+        username: user.username || user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+    const publicUrl = process.env.PUBLIC_URL || '';
+    res.redirect(`${publicUrl}/?token=${encodeURIComponent(token)}`);
+  }
+);
 
 // ─── Rutas protegidas ─────────────────────────────────────────────────────────
 

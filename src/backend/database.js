@@ -23,32 +23,72 @@ export async function initDb() {
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id          INTEGER PRIMARY KEY AUTOINCREMENT,
-      username    TEXT    UNIQUE NOT NULL,
-      password    TEXT    NOT NULL,
-      role        TEXT    NOT NULL CHECK(role IN ('patient', 'professional')),
-      first_name  TEXT    NOT NULL,
-      last_name   TEXT    NOT NULL,
-      email       TEXT    UNIQUE NOT NULL,
-      phone       TEXT,
-      dni                TEXT,
-      matricula          TEXT,
-      institucion        TEXT,
-      fecha_nacimiento   DATE,
-      cobertura_medica   TEXT,
-      numero_afiliado    TEXT,
-      created_at         DATETIME DEFAULT CURRENT_TIMESTAMP
+      id               INTEGER PRIMARY KEY AUTOINCREMENT,
+      google_id        TEXT    UNIQUE,
+      username         TEXT    UNIQUE,
+      password         TEXT,
+      role             TEXT    NOT NULL CHECK(role IN ('patient', 'professional')),
+      first_name       TEXT    NOT NULL,
+      last_name        TEXT    NOT NULL,
+      email            TEXT    UNIQUE NOT NULL,
+      phone            TEXT,
+      dni              TEXT,
+      matricula        TEXT,
+      institucion      TEXT,
+      fecha_nacimiento DATE,
+      cobertura_medica TEXT,
+      numero_afiliado  TEXT,
+      created_at       DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
+  // Migración: agregar google_id y hacer username/password nullable en DBs existentes
+  const cols = await db.all("PRAGMA table_info(users)");
+  const hasGoogleId = cols.some(c => c.name === 'google_id');
+
+  if (!hasGoogleId) {
+    await db.run('BEGIN');
+    try {
+      await db.run('ALTER TABLE users RENAME TO users_old');
+      await db.exec(`
+        CREATE TABLE users (
+          id               INTEGER PRIMARY KEY AUTOINCREMENT,
+          google_id        TEXT    UNIQUE,
+          username         TEXT    UNIQUE,
+          password         TEXT,
+          role             TEXT    NOT NULL CHECK(role IN ('patient', 'professional')),
+          first_name       TEXT    NOT NULL,
+          last_name        TEXT    NOT NULL,
+          email            TEXT    UNIQUE NOT NULL,
+          phone            TEXT,
+          dni              TEXT,
+          matricula        TEXT,
+          institucion      TEXT,
+          fecha_nacimiento DATE,
+          cobertura_medica TEXT,
+          numero_afiliado  TEXT,
+          created_at       DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      await db.run(`
+        INSERT INTO users (id, username, password, role, first_name, last_name, email,
+                           phone, dni, matricula, institucion, fecha_nacimiento,
+                           cobertura_medica, numero_afiliado, created_at)
+        SELECT id, username, password, role, first_name, last_name, email,
+               phone, dni, matricula, institucion, fecha_nacimiento,
+               cobertura_medica, numero_afiliado, created_at
+        FROM users_old
+      `);
+      await db.run('DROP TABLE users_old');
+      await db.run('COMMIT');
+    } catch (e) {
+      await db.run('ROLLBACK');
+      throw e;
+    }
+  }
+
   // Migración: agregar columnas faltantes en DBs existentes
   for (const col of [
-    'username TEXT',
-    'password TEXT',
-    'role TEXT',
-    'first_name TEXT',
-    'last_name TEXT',
-    'email TEXT',
     'phone TEXT',
     'dni TEXT',
     'matricula TEXT',

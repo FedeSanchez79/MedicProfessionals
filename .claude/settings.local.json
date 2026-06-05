@@ -65,7 +65,9 @@
       "PowerShell(taskkill *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\admin\\\\onedrive\\\\desktop\\\\medicprofessionales\" -Recurse -Directory)",
       "Bash(Select-Object FullName)",
-      "Bash(Format-List)"
+      "Bash(Format-List)",
+      "Bash(node --input-type=module --eval \"import './src/backend/database.js'\")",
+      "Bash(node --input-type=module --eval \"import passport from 'passport'; import { Strategy as G } from 'passport-google-oauth20'; import session from 'express-session'; console.log\\('OK'\\)\")"
     ]
   }
 }

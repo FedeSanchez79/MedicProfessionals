@@ -2,6 +2,38 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
   ? 'https://localhost:3001'
   : '';
 
+// Manejar token de OAuth (redirigido desde /auth/google/callback)
+(function handleOAuthToken() {
+  const params = new URLSearchParams(window.location.search);
+  const oauthToken = params.get('token');
+  const oauthError = params.get('error');
+
+  if (oauthError) {
+    // Se muestra el error después de que el DOM cargue
+    window.addEventListener('DOMContentLoaded', () => {
+      const div = document.getElementById('message');
+      if (div) { div.textContent = 'Error al iniciar sesión con Google. Intentá de nuevo.'; div.className = 'error'; }
+    });
+    history.replaceState(null, '', '/');
+    return;
+  }
+
+  if (oauthToken) {
+    try {
+      const payload = JSON.parse(atob(oauthToken.split('.')[1]));
+      sessionStorage.setItem('token',    oauthToken);
+      sessionStorage.setItem('userId',   payload.id);
+      sessionStorage.setItem('role',     payload.role);
+      sessionStorage.setItem('username', payload.username || '');
+      sessionStorage.setItem('nombre',   `${payload.first_name} ${payload.last_name}`);
+      localStorage.setItem('prof_token', oauthToken);
+      window.location.replace('/pages/profesional.html');
+    } catch {
+      history.replaceState(null, '', '/');
+    }
+  }
+})();
+
 // ─── Referencias DOM ──────────────────────────────────────────────────────────
 const loginForm        = document.getElementById('loginForm');
 const registerForm     = document.getElementById('registerForm');
