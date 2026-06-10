@@ -155,7 +155,8 @@
   color: var(--texto);
   line-height: 1.35;
 
-  &.no-data {
+  &.no-data,
+  &.vacio {
     color: var(--gris-claro);
     font-style: italic;
     font-size: 0.78rem;

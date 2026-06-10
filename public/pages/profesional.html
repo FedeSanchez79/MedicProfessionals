@@ -30,92 +30,94 @@
 </nav>
 
 <!-- Contenido principal -->
-<main class="main">
-  <div class="layout-profesional">
+<div class="dashboard-layout">
 
-    <!-- Columna izquierda: perfil del profesional -->
-    <aside class="sidebar-profesional">
-      <div class="card-perfil-pro">
-        <div class="perfil-sidebar-foto" id="sidebar-foto">P</div>
-        <div class="perfil-sidebar-nombre" id="sidebar-nombre-pro">Dr/a. —</div>
-        <div class="perfil-sidebar-rol">Profesional médico</div>
-        <div class="perfil-sidebar-datos">
-          <div class="perfil-sidebar-item">
-            <span class="perfil-sidebar-label">Especialidad</span>
-            <span class="perfil-sidebar-valor vacio" id="sidebar-especialidad">No configurada</span>
-          </div>
-          <div class="perfil-sidebar-item">
-            <span class="perfil-sidebar-label">Matrícula</span>
-            <span class="perfil-sidebar-valor vacio" id="sidebar-matricula">No configurada</span>
-          </div>
-          <div class="perfil-sidebar-item">
-            <span class="perfil-sidebar-label">Institución</span>
-            <span class="perfil-sidebar-valor vacio" id="sidebar-institucion">No configurada</span>
-          </div>
-        </div>
-        <button class="btn-editar-perfil" id="btn-editar-perfil-sidebar">Editar perfil</button>
+  <!-- Sidebar: perfil del profesional -->
+  <aside class="sidebar">
+    <div class="sidebar-avatar-wrap">
+      <div class="navbar-avatar" id="sidebar-foto">P</div>
+    </div>
+    <div class="sidebar-nombre">
+      Dr/a.
+      <span id="sidebar-nombre-pro">—</span>
+    </div>
+    <div class="sidebar-dr-label">Profesional médico</div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-info">
+      <div class="sidebar-info-item">
+        <span class="sidebar-info-label">Especialidad</span>
+        <span class="sidebar-info-value vacio" id="sidebar-especialidad">No configurada</span>
       </div>
-    </aside>
-
-    <!-- Columna derecha: panel principal -->
-    <div class="content-profesional">
-
-      <div class="page-header">
-        <h1>Panel profesional</h1>
-        <p>Accedé al historial de un paciente escaneando su código QR.</p>
+      <div class="sidebar-info-item">
+        <span class="sidebar-info-label">Matrícula</span>
+        <span class="sidebar-info-value vacio" id="sidebar-matricula">No configurada</span>
       </div>
-
-      <!-- Estado sin paciente -->
-      <div id="estado-vacio">
-        <div class="estado-vacio">
-          <div class="estado-vacio-icono">📱</div>
-          <h2>Ningún paciente cargado</h2>
-          <p>Pedile al paciente que genere su código QR desde Medic Data y escanealo para acceder a su historial.</p>
-          <p class="estado-vacio-hint">
-            El QR del paciente contiene un enlace seguro que expira en 15 minutos.
-          </p>
-          <button class="btn-escanear-qr" id="btn-escanear-qr">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-              <rect x="7" y="7" width="3" height="3" rx="1"/>
-              <rect x="14" y="7" width="3" height="3" rx="1"/>
-              <rect x="7" y="14" width="3" height="3" rx="1"/>
-              <path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01"/>
-            </svg>
-            Escanear QR del paciente
-          </button>
-        </div>
+      <div class="sidebar-info-item">
+        <span class="sidebar-info-label">Institución</span>
+        <span class="sidebar-info-value vacio" id="sidebar-institucion">No configurada</span>
       </div>
+    </div>
+    <button class="btn-editar-perfil" id="btn-editar-perfil-sidebar">Editar perfil</button>
+  </aside>
 
-      <!-- Vista del paciente (se muestra después de escanear QR) -->
-      <div id="vista-paciente" class="hidden">
+  <!-- Contenido principal -->
+  <main class="main">
 
-        <div class="paciente-header">
-          <div class="paciente-info">
-            <div class="paciente-avatar" id="paciente-avatar">—</div>
-            <div>
-              <div class="paciente-nombre" id="paciente-nombre">—</div>
-              <div class="paciente-meta" id="paciente-meta">—</div>
-            </div>
+    <div class="page-header">
+      <h1>Panel profesional</h1>
+      <p>Accedé al historial de un paciente escaneando su código QR.</p>
+    </div>
+
+    <!-- Estado sin paciente -->
+    <div id="estado-vacio">
+      <div class="estado-vacio">
+        <div class="estado-vacio-icono">📱</div>
+        <h2>Ningún paciente cargado</h2>
+        <p>Pedile al paciente que genere su código QR desde Medic Data y escanealo para acceder a su historial.</p>
+        <p class="estado-vacio-hint">
+          El QR del paciente contiene un enlace seguro que expira en 15 minutos.
+        </p>
+        <button class="btn-escanear-qr" id="btn-escanear-qr">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+            <rect x="7" y="7" width="3" height="3" rx="1"/>
+            <rect x="14" y="7" width="3" height="3" rx="1"/>
+            <rect x="7" y="14" width="3" height="3" rx="1"/>
+            <path d="M14 14h.01M14 17h.01M17 14h.01M17 17h.01"/>
+          </svg>
+          Escanear QR del paciente
+        </button>
+      </div>
+    </div>
+
+    <!-- Vista del paciente (se muestra después de escanear QR) -->
+    <div id="vista-paciente" class="hidden">
+
+      <div class="paciente-header">
+        <div class="paciente-info">
+          <div class="paciente-avatar" id="paciente-avatar">—</div>
+          <div>
+            <div class="paciente-nombre" id="paciente-nombre">—</div>
+            <div class="paciente-meta" id="paciente-meta">—</div>
           </div>
-          <button class="btn-nuevo-registro" id="btn-nuevo-registro">
-            + Agregar registro
-          </button>
         </div>
-
-        <div class="historial-header">
-          <h2>Historial médico</h2>
-          <span class="badge-count" id="badge-count">0 registros</span>
-        </div>
-        <div id="historial-container">
-          <div class="historial-vacio">No hay registros médicos todavía.</div>
-        </div>
-
+        <button class="btn-nuevo-registro" id="btn-nuevo-registro">
+          + Agregar registro
+        </button>
       </div>
 
-    </div><!-- /content-profesional -->
-  </div><!-- /layout-profesional -->
-</main>
+      <div class="historial-header">
+        <h2>Historial médico</h2>
+        <span class="badge-count" id="badge-count">0 registros</span>
+      </div>
+      <div id="historial-container">
+        <div class="historial-vacio">No hay registros médicos todavía.</div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
 
 <!-- Modal nuevo registro -->
 <div class="modal-overlay hidden" id="modal-overlay">
@@ -233,7 +235,7 @@
   (function() {
     const n = sessionStorage.getItem('nombre') || '—';
     const el = document.getElementById('sidebar-nombre-pro');
-    if (el) el.textContent = 'Dr/a. ' + n;
+    if (el) el.textContent = n;
   })();
 
   document.getElementById('btn-editar-perfil-sidebar')?.addEventListener('click', () => {

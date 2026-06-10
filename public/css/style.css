@@ -745,37 +745,228 @@ form {
     margin-bottom: 1.25rem;
   }
 }
+.page-profesional {
+  --verde: #10b981;
+  --verde-bg: rgba(16, 185, 129, 0.12);
+  --azul: #38bdf8;
+  --azul-suave: rgba(56, 189, 248, 0.12);
+  --azul-hover: #0ea5e9;
+  --texto: #e2e8f0;
+  --gris: #8892a4;
+  --gris-claro: #94a3b8;
+  --borde: #253049;
+  --fondo: #0d1117;
+  --blanco: #1c2333;
+  --error: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.12);
+  --exito: #10b981;
+  --exito-bg: rgba(16, 185, 129, 0.12);
+  --warning: #fbbf24;
+  --warning-bg: rgba(251, 191, 36, 0.12);
+  --surface: #161b27;
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6, 182, 212, 0.10);
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+.page-profesional .navbar {
+  background: var(--surface);
+  border-bottom-color: var(--borde);
+}
+
+.page-profesional .navbar-brand {
+  color: var(--texto);
+}
+
 .page-profesional .navbar-brand-dot {
   background: var(--verde);
 }
 
-.rol-badge {
-  font-size: 0.72rem;
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-profesional .rol-badge {
   background: var(--verde-bg);
   color: var(--verde);
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-weight: 500;
 }
 
-.main {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-.page-header {
-  margin-bottom: 2rem;
-}
-.page-header h1 {
-  font-family: "DM Serif Display", serif;
-  font-size: 1.8rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.25rem;
-}
-.page-header p {
-  font-size: 0.88rem;
+.page-profesional .btn-logout {
+  border-color: var(--borde);
   color: var(--gris);
+}
+.page-profesional .btn-logout:hover {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--surface);
+  border-right: 1px solid var(--borde);
+  padding: 1.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+}
+
+.sidebar-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.sidebar .navbar-avatar {
+  width: 68px;
+  height: 68px;
+  font-size: 1.35rem;
+  border: 2px solid var(--borde);
+  background: var(--verde-bg);
+  color: var(--verde);
+}
+
+.sidebar-nombre {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--gris);
+  line-height: 1.4;
+  margin-bottom: 0.4rem;
+}
+.sidebar-nombre span {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--texto);
+  margin-top: 2px;
+}
+
+.sidebar-dr-label {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--verde);
+  background: var(--verde-bg);
+  border-radius: 20px;
+  padding: 2px 10px;
+  width: fit-content;
+  margin: 0 auto 0;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--borde);
+  margin: 1.25rem 0;
+}
+
+.sidebar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+.sidebar-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sidebar-info-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gris);
+}
+
+.sidebar-info-value {
+  font-size: 0.85rem;
+  color: var(--texto);
+  line-height: 1.35;
+}
+.sidebar-info-value.no-data, .sidebar-info-value.vacio {
+  color: var(--gris-claro);
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
+.btn-editar-perfil {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--verde-bg);
+  color: var(--verde);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.btn-editar-perfil:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+
+.page-profesional .main {
+  flex: 1;
+  max-width: none;
+  margin: 0;
+  padding: 2rem 1.75rem;
+}
+
+.qr-section-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--verde);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.qr-card-header {
+  padding: 1.5rem 1.75rem 0;
+}
+
+.qr-card-title {
+  font-family: "DM Serif Display", serif;
+  font-size: 1.2rem;
+  color: var(--texto);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+
+.qr-card-sub {
+  font-size: 0.83rem;
+  color: var(--gris);
+  line-height: 1.55;
+}
+
+.qr-section-card .estado-vacio {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 1.5rem 2rem 2.5rem;
 }
 
 .estado-vacio {
@@ -794,6 +985,7 @@ form {
 .estado-vacio h2 {
   font-size: 1.1rem;
   font-weight: 500;
+  color: var(--texto);
   margin-bottom: 0.5rem;
 }
 
@@ -833,7 +1025,7 @@ form {
   flex-shrink: 0;
 }
 .btn-escanear-qr:hover {
-  background: #15803d;
+  background: #059669;
 }
 .btn-escanear-qr:active {
   transform: scale(0.97);
@@ -878,6 +1070,7 @@ form {
 .paciente-header {
   background: var(--blanco);
   border: 1px solid var(--borde);
+  border-left: 3px solid var(--cyan);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -897,8 +1090,8 @@ form {
 .paciente-avatar {
   width: 48px;
   height: 48px;
-  background: var(--verde-bg);
-  color: var(--verde);
+  background: var(--cyan-bg);
+  color: var(--cyan);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -911,6 +1104,7 @@ form {
 .paciente-nombre {
   font-size: 1.1rem;
   font-weight: 500;
+  color: var(--texto);
 }
 
 .paciente-meta {
@@ -935,17 +1129,129 @@ form {
   gap: 6px;
 }
 .btn-nuevo-registro:hover {
-  background: #15803d;
+  background: #059669;
+}
+
+.historial-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.historial-header h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--texto);
+}
+
+.badge-count {
+  font-size: 0.75rem;
+  background: var(--verde-bg);
+  color: var(--verde);
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 500;
 }
 
 .historial-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 2rem;
+}
+
+.historial-item {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.historial-vacio {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--gris);
+  font-size: 0.88rem;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+}
+
+.historial-item-body {
+  flex: 1;
+}
+
+.historial-item-titulo {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--texto);
+  margin-bottom: 3px;
+}
+
+.historial-item-desc {
+  font-size: 0.82rem;
+  color: var(--gris);
+  line-height: 1.5;
+}
+
+.historial-item-meta {
+  font-size: 0.75rem;
+  color: var(--gris-claro);
+  margin-top: 6px;
+}
+
+.tipo-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tipo-diagnostico {
+  background: rgba(26, 92, 255, 0.15);
+  color: #60a5fa;
+}
+
+.tipo-medicacion {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.tipo-alergia {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.tipo-cirugia {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+}
+
+.tipo-vacuna {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
+
+.tipo-estudio {
+  background: rgba(6, 182, 212, 0.15);
+  color: #22d3ee;
+}
+
+.tipo-nota {
+  background: rgba(148, 163, 184, 0.1);
+  color: #94a3b8;
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -958,6 +1264,7 @@ form {
 
 .modal {
   background: var(--blanco);
+  border: 1px solid var(--borde);
   border-radius: 20px;
   padding: 2rem;
   width: 100%;
@@ -969,6 +1276,7 @@ form {
 .modal-titulo {
   font-family: "DM Serif Display", serif;
   font-size: 1.3rem;
+  color: var(--texto);
   margin-bottom: 1.5rem;
 }
 
@@ -990,7 +1298,7 @@ form {
   cursor: pointer;
 }
 .btn-cancelar:hover {
-  background: var(--fondo);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .btn-guardar {
@@ -1006,11 +1314,36 @@ form {
   transition: background 0.2s;
 }
 .btn-guardar:hover {
-  background: #15803d;
+  background: #059669;
 }
 .btn-guardar:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.page-profesional input,
+.page-profesional select,
+.page-profesional textarea {
+  background: var(--surface);
+  border-color: var(--borde);
+  color: var(--texto);
+}
+.page-profesional input:focus,
+.page-profesional select:focus,
+.page-profesional textarea:focus {
+  border-color: var(--verde);
+}
+.page-profesional input::placeholder,
+.page-profesional select::placeholder,
+.page-profesional textarea::placeholder {
+  color: var(--gris-claro);
+}
+.page-profesional select option {
+  background: var(--surface);
+  color: var(--texto);
+}
+.page-profesional label {
+  color: var(--texto);
 }
 
 .campo-archivo input[type=file] {
@@ -1057,7 +1390,7 @@ form {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--borde);
-  background: var(--fondo);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .historial-archivo-img {
@@ -1079,7 +1412,7 @@ form {
 .historial-archivo-nombre {
   padding: 6px 10px;
   font-size: 0.75rem;
-  color: var(--gris-claro);
+  color: var(--gris);
   border-top: 1px solid var(--borde);
 }
 
@@ -1094,17 +1427,6 @@ form {
 }
 .historial-archivo-link:hover {
   text-decoration: underline;
-}
-
-.btn-perfil {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-.btn-perfil:hover {
-  opacity: 0.75;
 }
 
 .navbar-avatar {
@@ -1188,21 +1510,69 @@ form {
   stroke: white;
 }
 .perfil-foto-btn:hover {
-  background: #15803d;
+  background: #059669;
 }
 
 .perfil-foto-hint {
   font-size: 0.78rem;
-  color: var(--gris-claro);
+  color: var(--gris);
   text-align: center;
 }
 
-@media (max-width: 768px) {
-  .main {
-    padding: 1.5rem 1.25rem;
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 210px;
+    min-width: 210px;
   }
-  .page-header h1 {
-    font-size: 1.5rem;
+}
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: unset;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.875rem;
+    row-gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border-right: none;
+    border-bottom: 1px solid var(--borde);
+  }
+  .sidebar-avatar-wrap {
+    margin-bottom: 0;
+  }
+  .sidebar .navbar-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 0.9rem;
+  }
+  .sidebar-nombre {
+    text-align: left;
+    margin-bottom: 0;
+  }
+  .sidebar-dr-label {
+    margin: 0;
+  }
+  .sidebar-divider,
+  .sidebar-info {
+    display: none;
+  }
+  .btn-editar-perfil {
+    margin-top: 0;
+    width: auto;
+    padding: 0.45rem 0.875rem;
+    font-size: 0.8rem;
+  }
+  .page-profesional .main {
+    padding: 1.25rem 1rem;
+  }
+  .qr-section-card {
+    max-width: 100%;
   }
   .modal {
     padding: 1.5rem;
@@ -1210,20 +1580,14 @@ form {
   }
 }
 @media (max-width: 640px) {
-  .main {
+  .page-profesional .main {
     padding: 1rem;
   }
-  .page-header {
-    margin-bottom: 1.25rem;
+  .qr-card-header {
+    padding: 1.25rem 1.25rem 0;
   }
-  .page-header h1 {
-    font-size: 1.25rem;
-  }
-  .estado-vacio {
-    padding: 2.5rem 1.25rem;
-  }
-  .estado-vacio-icono {
-    font-size: 2.5rem;
+  .qr-section-card .estado-vacio {
+    padding: 1.25rem 1.25rem 2rem;
   }
   .btn-escanear-qr {
     width: 100%;
@@ -1269,13 +1633,15 @@ form {
   }
 }
 @media (max-width: 480px) {
-  .main {
+  .page-profesional .main {
     padding: 0.75rem;
+  }
+  .sidebar {
+    padding: 0.75rem 1rem;
   }
   .paciente-header {
     padding: 0.75rem;
   }
-  .estado-vacio {
-    padding: 2rem 1rem;
-  }
 }
+
+/*# sourceMappingURL=style.css.map */
