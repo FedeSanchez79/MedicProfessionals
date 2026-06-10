@@ -109,6 +109,97 @@
         </div>
 
         <div class="campo">
+          <label for="at-motivo">Motivo de consulta <span style="color:var(--text-secondary);font-weight:400">(opcional)</span></label>
+          <textarea id="at-motivo" rows="2" placeholder="Motivo por el que consulta el paciente…"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="at-diagnostico">Diagnóstico <span style="color:var(--text-secondary);font-weight:400">(opcional)</span></label>
+          <input type="text" id="at-diagnostico" placeholder="Diagnóstico presuntivo o confirmado">
+        </div>
+
+        <div class="campo">
+          <button type="button" id="btn-toggle-vitales" class="btn-toggle-seccion">+ Agregar signos vitales</button>
+          <div id="seccion-vitales" class="seccion-colapsable hidden">
+            <div class="grid-vitales">
+              <div class="campo">
+                <label for="at-vital-pa">Presión arterial</label>
+                <input type="text" id="at-vital-pa" placeholder="ej: 120/80">
+              </div>
+              <div class="campo">
+                <label for="at-vital-fc">Frecuencia cardíaca (bpm)</label>
+                <input type="number" id="at-vital-fc" placeholder="ej: 72">
+              </div>
+              <div class="campo">
+                <label for="at-vital-temp">Temperatura (°C)</label>
+                <input type="number" step="0.1" id="at-vital-temp" placeholder="ej: 36.5">
+              </div>
+              <div class="campo">
+                <label for="at-vital-spo2">Saturación O₂ (%)</label>
+                <input type="number" id="at-vital-spo2" placeholder="ej: 98">
+              </div>
+              <div class="campo">
+                <label for="at-vital-peso">Peso (kg)</label>
+                <input type="number" step="0.1" id="at-vital-peso" placeholder="ej: 70">
+              </div>
+              <div class="campo">
+                <label for="at-vital-talla">Talla (cm)</label>
+                <input type="number" id="at-vital-talla" placeholder="ej: 170">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección dinámica según subtipo -->
+        <div id="seccion-cirugia" class="seccion-dinamica hidden">
+          <div class="campo">
+            <label for="at-procedimiento">Procedimiento realizado</label>
+            <textarea id="at-procedimiento" rows="3" placeholder="Describí el procedimiento realizado…"></textarea>
+          </div>
+          <div class="campo">
+            <label for="at-complicaciones">Complicaciones</label>
+            <textarea id="at-complicaciones" rows="3" placeholder="Complicaciones durante o posteriores al procedimiento…"></textarea>
+          </div>
+        </div>
+
+        <div id="seccion-odontograma" class="seccion-dinamica hidden">
+          <div class="campo">
+            <label>Odontograma</label>
+            <div id="odontograma-container"></div>
+            <div id="odontograma-notas"></div>
+          </div>
+        </div>
+
+        <div id="seccion-psico" class="seccion-dinamica hidden">
+          <div class="campo">
+            <label for="at-sesion-numero">Número de sesión</label>
+            <input type="number" id="at-sesion-numero" min="1" placeholder="ej: 1">
+          </div>
+          <div class="campo">
+            <label for="at-estado-animico">Estado anímico</label>
+            <select id="at-estado-animico">
+              <option value="">Seleccioná una opción</option>
+              <option value="Estable">Estable</option>
+              <option value="Ansioso">Ansioso</option>
+              <option value="Deprimido">Deprimido</option>
+              <option value="Agitado">Agitado</option>
+              <option value="Mejoría">Mejoría</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="at-medicacion">Medicación recetada <span style="color:var(--text-secondary);font-weight:400">(opcional)</span></label>
+          <textarea id="at-medicacion" rows="2" placeholder="Nombre del medicamento, dosis, frecuencia…"></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="at-indicaciones">Indicaciones al paciente <span style="color:var(--text-secondary);font-weight:400">(opcional)</span></label>
+          <textarea id="at-indicaciones" rows="2" placeholder="Indicaciones, recomendaciones, próximos pasos…"></textarea>
+        </div>
+
+        <div class="campo">
           <label for="at-descripcion">Descripción / notas</label>
           <textarea id="at-descripcion" rows="4" placeholder="Observaciones, diagnóstico, indicaciones…"></textarea>
         </div>
@@ -436,10 +527,265 @@ async function cargarPerfilProfesional() {
 
 /* ── Nueva atención médica ─────────────────────────────────────────────────── */
 const subtiposMap = {
-  consulta: ['Primera consulta', 'Consulta de seguimiento', 'Guardia', 'Teleconsulta', 'Otro'],
+  consulta: ['Primera consulta', 'Consulta de seguimiento', 'Guardia', 'Teleconsulta', 'Atención odontológica', 'Consulta psicológica/psiquiátrica', 'Otro'],
   estudio:  ['Análisis de sangre', 'Radiografía', 'Ecografía', 'Tomografía', 'Resonancia', 'Electrocardiograma', 'Otro'],
   practica: ['Vacuna', 'Curación', 'Inyectable', 'Nebulización', 'Cirugía menor', 'Otro']
 };
+
+/* FDI: numeración de piezas dentarias adultas (32) */
+const FDI_SUPERIOR = [18, 17, 16, 15, 14, 13, 12, 11, 21, 22, 23, 24, 25, 26, 27, 28];
+const FDI_INFERIOR = [48, 47, 46, 45, 44, 43, 42, 41, 31, 32, 33, 34, 35, 36, 37, 38];
+let odontogramaState = {};
+
+function renderOdontograma() {
+  const cellW    = 38;
+  const toothSize = 28;
+  const gapCuadrante = 14;
+  const filas = [
+    { dientes: FDI_SUPERIOR, y: 8 },
+    { dientes: FDI_INFERIOR, y: 90 }
+  ];
+
+  let svgItems = '';
+  filas.forEach(fila => {
+    fila.dientes.forEach((num, i) => {
+      const extra   = i >= 8 ? gapCuadrante : 0;
+      const x       = i * cellW + extra;
+      const marcado = !!odontogramaState[num]?.marcado;
+      svgItems += `
+        <g class="diente" data-pieza="${num}">
+          <rect x="${x}" y="${fila.y}" width="${toothSize}" height="${toothSize}" rx="5"
+            fill="${marcado ? 'var(--accent-green)' : 'var(--bg-surface-2)'}"
+            stroke="${marcado ? 'var(--accent-green)' : 'var(--borde)'}" stroke-width="1.5" />
+          <text x="${x + toothSize / 2}" y="${fila.y + toothSize / 2 + 4}" text-anchor="middle"
+            font-size="9" fill="${marcado ? '#0c1620' : 'var(--text-secondary)'}" font-family="DM Sans, sans-serif">${num}</text>
+        </g>`;
+    });
+  });
+
+  const svgWidth  = 16 * cellW + gapCuadrante;
+  const svgHeight = 90 + toothSize + 8;
+
+  const container = document.getElementById('odontograma-container');
+  container.innerHTML = `<svg viewBox="0 0 ${svgWidth} ${svgHeight}" class="odontograma-svg" xmlns="http://www.w3.org/2000/svg">${svgItems}</svg>`;
+
+  container.querySelectorAll('.diente').forEach(g => {
+    g.addEventListener('click', () => {
+      const pieza = g.getAttribute('data-pieza');
+      if (odontogramaState[pieza]?.marcado) {
+        delete odontogramaState[pieza];
+      } else {
+        odontogramaState[pieza] = { marcado: true, nota: '' };
+      }
+      renderOdontograma();
+      renderOdontogramaNotas();
+    });
+  });
+}
+
+function renderOdontogramaNotas() {
+  const cont   = document.getElementById('odontograma-notas');
+  const piezas = Object.keys(odontogramaState).sort((a, b) => a - b);
+
+  if (!piezas.length) {
+    cont.innerHTML = `<p class="odontograma-vacio">Hacé click en una pieza dentaria para marcarla y agregar una nota.</p>`;
+    return;
+  }
+
+  cont.innerHTML = piezas.map(num => `
+    <div class="odontograma-nota-item">
+      <span class="odontograma-nota-pieza">Pieza ${num}</span>
+      <input type="text" class="odontograma-nota-input" data-pieza="${num}" placeholder="Nota (caries, ausente, tratamiento…)" value="${odontogramaState[num].nota || ''}">
+    </div>
+  `).join('');
+
+  cont.querySelectorAll('.odontograma-nota-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const pieza = input.getAttribute('data-pieza');
+      if (odontogramaState[pieza]) odontogramaState[pieza].nota = input.value;
+    });
+  });
+}
+
+function obtenerOdontogramaTexto() {
+  const piezas = Object.keys(odontogramaState).sort((a, b) => a - b);
+  if (!piezas.length) return '';
+  return piezas.map(num => {
+    const nota = (odontogramaState[num].nota || '').trim();
+    return `Pieza ${num}${nota ? `: ${nota}` : ''}`;
+  }).join('; ');
+}
+
+/* Mostrar/ocultar la sección dinámica según el subtipo elegido */
+function actualizarSeccionesDinamicas() {
+  const subtipo     = document.getElementById('at-subtipo').value.toLowerCase();
+  const secCirugia  = document.getElementById('seccion-cirugia');
+  const secOdonto   = document.getElementById('seccion-odontograma');
+  const secPsico    = document.getElementById('seccion-psico');
+
+  secCirugia.classList.add('hidden');
+  secOdonto.classList.add('hidden');
+  secPsico.classList.add('hidden');
+
+  if (subtipo.includes('cirug')) {
+    secCirugia.classList.remove('hidden');
+  } else if (subtipo.includes('odonto') || subtipo.includes('dental')) {
+    secOdonto.classList.remove('hidden');
+    renderOdontograma();
+    renderOdontogramaNotas();
+  } else if (subtipo.includes('psico') || subtipo.includes('psiquiat')) {
+    secPsico.classList.remove('hidden');
+  }
+}
+
+/* Recolecta los valores de los campos extendidos del formulario */
+function obtenerDatosExtendidos() {
+  const subtipo = document.getElementById('at-subtipo').value.toLowerCase();
+  return {
+    motivo:         document.getElementById('at-motivo').value.trim(),
+    diagnostico:    document.getElementById('at-diagnostico').value.trim(),
+    vitales: {
+      pa:    document.getElementById('at-vital-pa').value.trim(),
+      fc:    document.getElementById('at-vital-fc').value.trim(),
+      temp:  document.getElementById('at-vital-temp').value.trim(),
+      spo2:  document.getElementById('at-vital-spo2').value.trim(),
+      peso:  document.getElementById('at-vital-peso').value.trim(),
+      talla: document.getElementById('at-vital-talla').value.trim()
+    },
+    procedimiento:  document.getElementById('at-procedimiento').value.trim(),
+    complicaciones: document.getElementById('at-complicaciones').value.trim(),
+    sesionNumero:   document.getElementById('at-sesion-numero').value.trim(),
+    estadoAnimico:  document.getElementById('at-estado-animico').value,
+    medicacion:     document.getElementById('at-medicacion').value.trim(),
+    indicaciones:   document.getElementById('at-indicaciones').value.trim(),
+    esCirugia: subtipo.includes('cirug'),
+    esOdonto:  subtipo.includes('odonto') || subtipo.includes('dental'),
+    esPsico:   subtipo.includes('psico') || subtipo.includes('psiquiat')
+  };
+}
+
+/* Arma el texto de "descripción" enviado al backend, con todos los campos completados */
+function construirDescripcionCompleta(datos, descripcionBase) {
+  const partes = [];
+
+  if (datos.motivo)      partes.push(`Motivo de consulta: ${datos.motivo}`);
+  if (datos.diagnostico) partes.push(`Diagnóstico: ${datos.diagnostico}`);
+
+  const v = datos.vitales;
+  const vitalesPartes = [];
+  if (v.pa)    vitalesPartes.push(`PA: ${v.pa}`);
+  if (v.fc)    vitalesPartes.push(`FC: ${v.fc} bpm`);
+  if (v.temp)  vitalesPartes.push(`Temp: ${v.temp} °C`);
+  if (v.spo2)  vitalesPartes.push(`SpO₂: ${v.spo2} %`);
+  if (v.peso)  vitalesPartes.push(`Peso: ${v.peso} kg`);
+  if (v.talla) vitalesPartes.push(`Talla: ${v.talla} cm`);
+  if (vitalesPartes.length) partes.push(`Signos vitales: ${vitalesPartes.join(', ')}`);
+
+  if (datos.esCirugia) {
+    if (datos.procedimiento)  partes.push(`Procedimiento realizado: ${datos.procedimiento}`);
+    if (datos.complicaciones) partes.push(`Complicaciones: ${datos.complicaciones}`);
+  }
+
+  if (datos.esOdonto) {
+    const odonto = obtenerOdontogramaTexto();
+    if (odonto) partes.push(`Odontograma: ${odonto}`);
+  }
+
+  if (datos.esPsico) {
+    if (datos.sesionNumero)  partes.push(`Número de sesión: ${datos.sesionNumero}`);
+    if (datos.estadoAnimico) partes.push(`Estado anímico: ${datos.estadoAnimico}`);
+  }
+
+  if (datos.medicacion)   partes.push(`Medicación recetada: ${datos.medicacion}`);
+  if (datos.indicaciones) partes.push(`Indicaciones al paciente: ${datos.indicaciones}`);
+  if (descripcionBase)    partes.push(`Descripción / notas: ${descripcionBase}`);
+
+  return partes.join('\n');
+}
+
+/* Genera el HTML de previsualización para los campos extendidos completados */
+function renderPreviewExtra(datos) {
+  let html = '';
+
+  if (datos.motivo) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Motivo de consulta</div>
+      <div class="preview-descripcion">${datos.motivo}</div>
+    </div>`;
+  }
+
+  if (datos.diagnostico) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Diagnóstico</div>
+      <div class="preview-descripcion">${datos.diagnostico}</div>
+    </div>`;
+  }
+
+  const v = datos.vitales;
+  const vitalesItems = [];
+  if (v.pa)    vitalesItems.push(['Presión arterial', v.pa]);
+  if (v.fc)    vitalesItems.push(['Frecuencia cardíaca', `${v.fc} bpm`]);
+  if (v.temp)  vitalesItems.push(['Temperatura', `${v.temp} °C`]);
+  if (v.spo2)  vitalesItems.push(['Saturación O₂', `${v.spo2} %`]);
+  if (v.peso)  vitalesItems.push(['Peso', `${v.peso} kg`]);
+  if (v.talla) vitalesItems.push(['Talla', `${v.talla} cm`]);
+  if (vitalesItems.length) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Signos vitales</div>
+      <div class="preview-grid">
+        ${vitalesItems.map(([label, val]) => `
+          <div class="preview-item">
+            <span class="preview-item-label">${label}</span>
+            <span class="preview-item-value">${val}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (datos.esCirugia && (datos.procedimiento || datos.complicaciones)) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Cirugía</div>
+      ${datos.procedimiento  ? `<div class="dato-item"><span class="dato-label">Procedimiento realizado</span><div class="preview-descripcion">${datos.procedimiento}</div></div>`   : ''}
+      ${datos.complicaciones ? `<div class="dato-item"><span class="dato-label">Complicaciones</span><div class="preview-descripcion">${datos.complicaciones}</div></div>` : ''}
+    </div>`;
+  }
+
+  if (datos.esOdonto) {
+    const odonto = obtenerOdontogramaTexto();
+    if (odonto) {
+      html += `<div class="preview-seccion">
+        <div class="preview-seccion-titulo">Odontograma</div>
+        <div class="preview-descripcion">${odonto}</div>
+      </div>`;
+    }
+  }
+
+  if (datos.esPsico && (datos.sesionNumero || datos.estadoAnimico)) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Salud mental</div>
+      <div class="preview-grid">
+        ${datos.sesionNumero  ? `<div class="preview-item"><span class="preview-item-label">Número de sesión</span><span class="preview-item-value">${datos.sesionNumero}</span></div>`   : ''}
+        ${datos.estadoAnimico ? `<div class="preview-item"><span class="preview-item-label">Estado anímico</span><span class="preview-item-value">${datos.estadoAnimico}</span></div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  if (datos.medicacion) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Medicación recetada</div>
+      <div class="preview-descripcion">${datos.medicacion}</div>
+    </div>`;
+  }
+
+  if (datos.indicaciones) {
+    html += `<div class="preview-seccion">
+      <div class="preview-seccion-titulo">Indicaciones al paciente</div>
+      <div class="preview-descripcion">${datos.indicaciones}</div>
+    </div>`;
+  }
+
+  return html;
+}
 
 const tipoDisplayMap = {
   consulta: 'Consulta médica',
@@ -482,6 +828,28 @@ function abrirFormNuevaAtencion() {
   adjuntoNombre = null;
   adjuntoMime   = null;
 
+  /* Reset campos extendidos */
+  document.getElementById('at-motivo').value         = '';
+  document.getElementById('at-diagnostico').value    = '';
+  document.getElementById('at-vital-pa').value       = '';
+  document.getElementById('at-vital-fc').value       = '';
+  document.getElementById('at-vital-temp').value     = '';
+  document.getElementById('at-vital-spo2').value     = '';
+  document.getElementById('at-vital-peso').value     = '';
+  document.getElementById('at-vital-talla').value    = '';
+  document.getElementById('at-procedimiento').value  = '';
+  document.getElementById('at-complicaciones').value = '';
+  document.getElementById('at-sesion-numero').value  = '';
+  document.getElementById('at-estado-animico').value = '';
+  document.getElementById('at-medicacion').value     = '';
+  document.getElementById('at-indicaciones').value   = '';
+
+  document.getElementById('seccion-vitales').classList.add('hidden');
+  document.getElementById('btn-toggle-vitales').textContent = '+ Agregar signos vitales';
+
+  odontogramaState = {};
+  actualizarSeccionesDinamicas();
+
   /* Show step 1 */
   document.getElementById('form-paso-1').classList.remove('hidden');
   document.getElementById('form-paso-2').classList.add('hidden');
@@ -510,11 +878,27 @@ document.getElementById('at-tipo').addEventListener('change', () => {
   if (!tipo) {
     sel.innerHTML = '<option value="">Primero seleccioná un tipo</option>';
     sel.disabled  = true;
-    return;
+  } else {
+    sel.innerHTML = `<option value="">Seleccioná un subtipo</option>` +
+      (subtiposMap[tipo] || []).map(s => `<option value="${s}">${s}</option>`).join('');
+    sel.disabled = false;
   }
-  sel.innerHTML = `<option value="">Seleccioná un subtipo</option>` +
-    (subtiposMap[tipo] || []).map(s => `<option value="${s}">${s}</option>`).join('');
-  sel.disabled = false;
+  actualizarSeccionesDinamicas();
+});
+
+document.getElementById('at-subtipo').addEventListener('change', actualizarSeccionesDinamicas);
+
+/* Toggle de la sección de signos vitales */
+document.getElementById('btn-toggle-vitales').addEventListener('click', () => {
+  const sec = document.getElementById('seccion-vitales');
+  const btn = document.getElementById('btn-toggle-vitales');
+  if (sec.classList.contains('hidden')) {
+    sec.classList.remove('hidden');
+    btn.textContent = '− Ocultar signos vitales';
+  } else {
+    sec.classList.add('hidden');
+    btn.textContent = '+ Agregar signos vitales';
+  }
 });
 
 /* Adjunto: validación 5 MB y previsualización */
@@ -584,6 +968,8 @@ document.getElementById('btn-previsualizar').addEventListener('click', () => {
 
   const descripcion  = document.getElementById('at-descripcion').value.trim();
   const fechaDisplay = document.getElementById('ro-fecha').textContent;
+  const datosExtra   = obtenerDatosExtendidos();
+  const previewExtra = renderPreviewExtra(datosExtra);
 
   let adjuntoHTML = `<span style="color:var(--text-secondary);font-size:0.85rem;font-style:italic">Sin adjunto</span>`;
   if (adjuntoBase64) {
@@ -633,6 +1019,8 @@ document.getElementById('btn-previsualizar').addEventListener('click', () => {
       </div>
     </div>
 
+    ${previewExtra}
+
     ${descripcion ? `
     <div class="preview-seccion">
       <div class="preview-seccion-titulo">Descripción / notas</div>
@@ -676,18 +1064,25 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
   const tipo        = document.getElementById('at-tipo').value;
   const subtipo     = document.getElementById('at-subtipo').value;
   const descripcion = document.getElementById('at-descripcion').value.trim();
+  const datosExtra  = obtenerDatosExtendidos();
+  const descripcionCompleta = construirDescripcionCompleta(datosExtra, descripcion);
 
   const body = {
     patient_id:              pacienteActual.id,
     tipo:                    tipoDisplayMap[tipo],
     subtipo:                 subtipo,
-    descripcion:             descripcion || null,
+    descripcion:             descripcionCompleta || null,
     fecha:                   fechaHoraISO,
     profesional_nombre:      nombre || '',
     profesional_matricula:   perfilProfesional.matricula   || '',
     profesional_institucion: perfilProfesional.institucion || '',
     adjunto_base64:          adjuntoBase64 || null,
     adjunto_nombre:          adjuntoNombre || null
+  };
+
+  const bodyResumen = {
+    ...body,
+    adjunto_base64: adjuntoBase64 ? `[base64 omitido, ${adjuntoBase64.length} caracteres ~ ${(adjuntoBase64.length * 0.75 / 1024).toFixed(1)} KB]` : null
   };
 
   try {
@@ -711,7 +1106,7 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
         tipo:           tipo,
         subtipo:        subtipo,
         titulo:         subtipo,
-        descripcion:    descripcion || null,
+        descripcion:    descripcionCompleta || null,
         fecha_registro: fechaHoraISO.slice(0, 10),
         created_at:     fechaHoraISO,
         prof_nombre:    nombre || '',
@@ -729,14 +1124,17 @@ document.getElementById('btn-confirmar').addEventListener('click', async () => {
     }
 
     let errMsg = 'Error al guardar la atención. Intentá de nuevo.';
+    let errBody = null;
     try {
-      const data = await res.json();
-      errMsg = data.message || errMsg;
+      errBody = await res.json();
+      errMsg  = errBody.message || errMsg;
     } catch (_) {}
+    console.error(`Error al guardar atención (HTTP ${res.status}):`, errBody || '(sin cuerpo de respuesta)', 'Payload enviado:', bodyResumen);
     errorEl.textContent = errMsg;
     errorEl.classList.remove('hidden');
 
-  } catch {
+  } catch (err) {
+    console.error('Error de conexión al guardar atención:', err, 'Payload:', bodyResumen);
     errorEl.textContent = 'Error de conexión. Revisá tu red e intentá de nuevo.';
     errorEl.classList.remove('hidden');
   } finally {

@@ -72,7 +72,11 @@
       "Bash(sed -n '359,395p' public/css/style.css)",
       "Bash(sed -n '470,492p' public/css/style.css)",
       "Bash(sed -n '569,600p' public/css/style.css)",
-      "Bash(sed -n '639,690p' public/css/style.css)"
+      "Bash(sed -n '639,690p' public/css/style.css)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\admin\\\\OneDrive\\\\Desktop\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(grep -v '^class$')",
+      "Bash(grep -n \"^\\\\.hidden\\\\|^\\\\\\\\.hidden\" src/sass/*.scss)"
     ]
   }
 }

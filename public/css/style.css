@@ -94,6 +94,21 @@ body {
   font-weight: 500;
 }
 
+.btn-perfil {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  width: auto;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: box-shadow 0.2s;
+}
+.btn-perfil:hover {
+  box-shadow: 0 0 0 2px var(--verde-bg, rgba(0, 200, 150, 0.2));
+}
+
 .btn-logout {
   font-size: 0.82rem;
   padding: 6px 14px;
@@ -936,7 +951,6 @@ form {
 
 .page-header {
   padding-top: 20px;
-  padding-bottom: 20px;
 }
 
 .qr-section-card {
@@ -1646,5 +1660,503 @@ form {
   }
   .paciente-header {
     padding: 0.75rem;
+  }
+}
+.estado-cargando,
+.estado-error {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  color: var(--gris);
+  font-size: 0.9rem;
+}
+
+.estado-error h2 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--texto);
+  margin-bottom: 0.5rem;
+}
+
+.estado-error p {
+  font-size: 0.88rem;
+  color: var(--gris);
+  max-width: 380px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.layout-paciente {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.sidebar-paciente {
+  position: sticky;
+  top: calc(60px + 1.5rem);
+}
+
+.card-paciente-sidebar {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.paciente-avatar-grande {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  background: var(--verde-bg);
+  color: var(--verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.card-paciente-sidebar .paciente-meta {
+  margin-bottom: 0;
+  word-break: break-word;
+}
+
+.sidebar-datos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+  text-align: left;
+}
+
+.dato-item,
+.campo-readonly {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dato-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--gris);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dato-valor {
+  font-size: 0.85rem;
+  color: var(--texto);
+  font-weight: 500;
+  word-break: break-word;
+}
+.dato-valor.vacio {
+  color: var(--gris-claro);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.content-paciente {
+  min-width: 0;
+}
+
+.filtros-historial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.25rem;
+}
+
+.filtro-campo {
+  flex: 1;
+  min-width: 160px;
+}
+.filtro-campo input, .filtro-campo select {
+  margin: 0;
+}
+
+.btn-nueva-atencion {
+  padding: 0.6rem 1.2rem;
+  background: var(--verde);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-nueva-atencion:hover {
+  background: #059669;
+}
+
+.btn-limpiar-filtros {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--gris);
+  font-size: 0.82rem;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.btn-limpiar-filtros:hover {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+#panel-nueva-atencion {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.panel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  color: var(--gris);
+  font-size: 0.85rem;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+  transition: color 0.2s;
+}
+.btn-volver:hover {
+  color: var(--verde);
+}
+
+.paso-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.paso-item {
+  font-size: 0.8rem;
+  color: var(--gris);
+}
+.paso-item.activo {
+  color: var(--verde);
+  font-weight: 500;
+}
+
+.paso-separator {
+  width: 28px;
+  height: 2px;
+  background: var(--borde);
+  border-radius: 1px;
+}
+.paso-separator.completado {
+  background: var(--verde);
+}
+
+.card-seccion {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.card-seccion-titulo {
+  font-family: "DM Serif Display", serif;
+  font-size: 1.05rem;
+  color: var(--texto);
+  letter-spacing: -0.01em;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.campos-readonly {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.5rem;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.error-inline {
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 10px;
+  background: var(--error-bg);
+  color: var(--error);
+  font-size: 0.85rem;
+}
+
+.error-archivo {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--error);
+}
+
+.preview-card {
+  background: var(--blanco);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.preview-card-titulo {
+  font-family: "DM Serif Display", serif;
+  font-size: 1.2rem;
+  color: var(--texto);
+  letter-spacing: -0.01em;
+  margin-bottom: 1.25rem;
+}
+
+.preview-seccion {
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+.preview-seccion:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.preview-seccion-titulo {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gris);
+  margin-bottom: 0.85rem;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.preview-item-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--gris);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.preview-item-value {
+  font-size: 0.9rem;
+  color: var(--texto);
+  font-weight: 500;
+  word-break: break-word;
+}
+.preview-item-value.vacio {
+  color: var(--gris-claro);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.preview-descripcion {
+  font-size: 0.88rem;
+  color: var(--texto);
+  line-height: 1.6;
+  white-space: pre-line;
+  word-break: break-word;
+}
+
+.preview-adjunto-img {
+  display: block;
+  max-width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid var(--borde);
+  background: #000;
+}
+
+.preview-adjunto-pdf {
+  padding: 0.65rem 0.9rem;
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+
+.btn-toggle-seccion {
+  padding: 0.55rem 1rem;
+  border: 1.5px dashed var(--borde);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--verde);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-toggle-seccion:hover {
+  background: var(--verde-bg);
+  border-color: var(--verde);
+}
+
+.seccion-colapsable {
+  margin-top: 12px;
+}
+.seccion-colapsable.hidden {
+  display: none;
+}
+
+.grid-vitales {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 14px;
+}
+
+.seccion-dinamica {
+  border-left: 2px solid var(--verde);
+  padding-left: 14px;
+  margin-bottom: 14px;
+}
+.seccion-dinamica.hidden {
+  display: none;
+}
+
+.odontograma-svg {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin-top: 6px;
+}
+.odontograma-svg .diente {
+  cursor: pointer;
+}
+.odontograma-svg .diente rect {
+  transition: fill 0.15s ease, stroke 0.15s ease;
+}
+.odontograma-svg .diente:hover rect {
+  stroke: var(--verde);
+}
+
+.odontograma-vacio {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--gris);
+  font-style: italic;
+}
+
+.odontograma-nota-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.odontograma-nota-pieza {
+  flex-shrink: 0;
+  min-width: 70px;
+  font-size: 0.8rem;
+  color: var(--gris);
+  font-weight: 500;
+}
+
+.odontograma-nota-input {
+  flex: 1;
+}
+
+@media (max-width: 900px) {
+  .layout-paciente {
+    grid-template-columns: 1fr;
+  }
+  .sidebar-paciente {
+    position: static;
+  }
+}
+@media (max-width: 768px) {
+  .card-seccion,
+  .preview-card,
+  .card-paciente-sidebar {
+    padding: 1.25rem;
+  }
+  .campos-readonly {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 640px) {
+  .filtros-historial {
+    flex-direction: column;
+  }
+  .filtro-campo {
+    min-width: unset;
+  }
+  .btn-nueva-atencion,
+  .btn-limpiar-filtros {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .historial-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .panel-nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-vitales {
+    grid-template-columns: 1fr 1fr;
+  }
+  .panel-footer {
+    flex-direction: column-reverse;
+  }
+  .panel-footer .btn-cancelar,
+  .panel-footer .btn-guardar {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  .card-seccion,
+  .preview-card,
+  .card-paciente-sidebar {
+    padding: 1rem;
+  }
+  .grid-vitales {
+    grid-template-columns: 1fr;
   }
 }
