@@ -934,6 +934,10 @@ form {
   padding: 2rem 1.75rem;
 }
 
+.page-header {
+  padding-top: 20px;
+}
+
 .qr-section-card {
   background: var(--blanco);
   border: 1px solid var(--borde);
@@ -1643,5 +1647,3 @@ form {
     padding: 0.75rem;
   }
 }
-
-/*# sourceMappingURL=style.css.map */
