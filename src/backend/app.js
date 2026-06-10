@@ -301,7 +301,10 @@ app.post('/reset-password', async (req, res) => {
 
 // ─── Google OAuth ─────────────────────────────────────────────────────────────
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google', passport.authenticate('google', {
+  scope: ['profile', 'email'],
+  prompt: 'select_account'
+}));
 
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/?error=oauth' }),
